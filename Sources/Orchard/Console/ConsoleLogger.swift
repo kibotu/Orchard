@@ -5,12 +5,40 @@ class ConsoleLogger: Orchard.Logger {
     
     /// The minimum log level this logger will process (set to verbose by default)
     let level: Orchard.Level = Orchard.Level.verbose
-    
+        
     /// Optional tag to categorize log messages
-    var tag: String? = nil
+    private var _tag: String?
+    private let lock = NSLock()
+
+    var tag: String? {
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return _tag
+        }
+        set {
+            lock.lock()
+            defer { lock.unlock() }
+            _tag = newValue
+        }
+    }
     
     /// Optional icon to visually represent log messages
-    var icon: Character? = nil
+    private var _icon: Character?
+    private let iconLock = NSLock()
+
+    var icon: Character? {
+        get {
+            iconLock.lock()
+            defer { iconLock.unlock() }
+            return _icon
+        }
+        set {
+            iconLock.lock()
+            defer { iconLock.unlock() }
+            _icon = newValue
+        }
+    }
     
     /// Determines whether to show timestamps in log messages
     /// Persisted using @Storage property wrapper with key "ConsoleLogger_Log_Timestamp"

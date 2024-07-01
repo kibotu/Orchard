@@ -38,10 +38,38 @@ public class Orchard {
     static var loggers = [Orchard.Logger]()
     
     /// Current tag to be applied to the next log message
-    private static var tag : String? = nil
+    static  private var _tag: String?
+    static private let lock = NSLock()
+
+    static private var tag: String? {
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return _tag
+        }
+        set {
+            lock.lock()
+            defer { lock.unlock() }
+            _tag = newValue
+        }
+    }
     
     /// Current icon to be applied to the next log message
-    private static var icon : Character? = nil
+    private static var _icon: Character?
+    private static let iconLock = NSLock()
+
+    private static var icon: Character? {
+        get {
+            iconLock.lock()
+            defer { iconLock.unlock() }
+            return _icon
+        }
+        set {
+            iconLock.lock()
+            defer { iconLock.unlock() }
+            _icon = newValue
+        }
+    }
     
     /// Sets a tag for the next log message
     ///
