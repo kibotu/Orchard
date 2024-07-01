@@ -26,7 +26,7 @@ class ConsoleLogger: Orchard.Logger {
     }
     
     /// Computed property that returns a formatted timestamp string if showTimesStamp is true, otherwise an empty string
-    private var date: String {
+    var date: String {
         if showTimesStamp {
             "\(formatter.string(from: Date())): "
         } else {
@@ -88,7 +88,7 @@ class ConsoleLogger: Orchard.Logger {
     ///   - fileId: The file ID where the log was called
     ///   - function: The function where the log was called
     ///   - line: The line number where the log was called
-    private func log(level: Orchard.Level, message: String?, error: (any Error)?, args: [String : any CustomStringConvertible]?, file: String, fileId: String, function: String, line: Int) {
+    open func log(level: Orchard.Level, message: String?, error: (any Error)?, args: [String : any CustomStringConvertible]?, file: String, fileId: String, function: String, line: Int) {
         let invocation = showInvocation ? "/\(fileId.fileFromfileId).\(function):\(line)" : ""
         print("\(icon ?? level.icon) \(date)[\(tag ?? file.moduleNameFromFile)\(invocation)]\(message.paddedNilOrValue)\(error.paddedNilOrValue)\(paddedToString(args))")
         tag = nil
