@@ -6,13 +6,7 @@ extension String {
             return self
         }
         
-        let pathAfterSources = String(self[range.upperBound...])
-        
-        // Split by "/" to get path components and find the first one that follows "Sources/"
-        let components = pathAfterSources.split(separator: "/")
-        
-        // If splitting fails or there is no component after "Sources/", return the modified filename
-        return pathAfterSources
+        return String(self[range.upperBound...])
     }
     
     /// e.g.

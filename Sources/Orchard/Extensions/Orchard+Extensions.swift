@@ -106,7 +106,6 @@ func paddedToString(_ args: [String: any CustomStringConvertible]?, _ opt: JSONS
         return ""
     }
     
-    let encoder = JSONEncoder()
     do {
         let jsonData = try JSONSerialization.data(withJSONObject: args, options: opt)
         if let jsonString = String(data: jsonData, encoding: .utf8) {
