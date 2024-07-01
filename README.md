@@ -119,7 +119,7 @@ Add the dependency to your `Package.swift`
       ...
     ]
     dependencies: [
-        .package(url: "https://github.com/kibotu/Orchard", from: "1.0.1"),
+        .package(url: "https://github.com/kibotu/Orchard", from: "1.0.2"),
     ],
     targets: [
       ...
