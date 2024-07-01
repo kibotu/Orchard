@@ -1,3 +1,5 @@
+import Foundation
+
 /// Orchard: A versatile and unified logging system for Swift applications
 ///
 /// The `Orchard` class provides a centralized logging mechanism that allows for easy integration
@@ -183,6 +185,14 @@ public class Orchard {
         /// - Returns: true if the left-hand side is less severe than the right-hand side
         public static func < (lhs: Level, rhs: Level) -> Bool {
             lhs.severityOrder < rhs.severityOrder
+        }
+        
+        public static func printStackTrace() {
+            Thread.printStackTrace()
+        }
+        
+        public static var callStack: [String] {
+            return Thread.callStack
         }
     }
     
