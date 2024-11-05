@@ -35,10 +35,10 @@ import Foundation
 public class Orchard {
     
     /// Array of loggers that will receive log messages
-    static var loggers = [Orchard.Logger]()
+    public static var loggers = [Orchard.Logger]()
     
     /// Current tag to be applied to the next log message
-    static  private var _tag: String?
+    static private var _tag: String?
     static private let lock = NSLock()
 
     static private var tag: String? {
@@ -76,7 +76,7 @@ public class Orchard {
     /// - Parameter tag: A string to categorize the log message
     /// - Returns: The Orchard type for method chaining
     @discardableResult
-    static func tag(_ tag: String) -> Orchard.Type {
+    public static func tag(_ tag: String) -> Orchard.Type {
         self.tag = tag
         return self
     }
@@ -86,7 +86,7 @@ public class Orchard {
     /// - Parameter icon: A character to visually represent the log message
     /// - Returns: The Orchard type for method chaining
     @discardableResult
-    static func icon(_ icon: Character?) -> Orchard.Type {
+    public static func icon(_ icon: Character?) -> Orchard.Type {
         self.icon = icon
         return self
     }

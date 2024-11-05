@@ -1,7 +1,7 @@
 import Foundation
 
 /// A concrete implementation of Orchard.Logger that logs messages to the console
-class ConsoleLogger: Orchard.Logger {
+public class ConsoleLogger: Orchard.Logger {
     
     /// The minimum log level this logger will process (set to verbose by default)
     let level: Orchard.Level = Orchard.Level.verbose
