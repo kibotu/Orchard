@@ -2,31 +2,23 @@ name: Swift
 
 on:
   push:
-    branches:
-      - master
-      - 'v[0-9]+.[0-9]+.[0-9]+'
-    tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
-      - 'v[0-9]+.[0-9]+.[0-9]+-*'
+    branches: [master, 'v[0-9]+.[0-9]+.[0-9]+']
+    tags: ['v[0-9]+.[0-9]+.[0-9]+*']
   pull_request:
-    branches:
-      - master
+    branches: [master]
 
 jobs:
   build:
-    name: Build with Xcode on macOS 26
-    runs-on: macos-26
+    runs-on: macos-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
       
-      - name: Show Xcode and Swift version
+      - name: Show versions
         run: |
           xcodebuild -version
           swift --version
       
-      - name: Build
-        run: swift build -v
-      
-      - name: Run tests
-        run: swift test -v
+      - name: Build and test
+        run: |
+          swift build -v
+          swift test -v
