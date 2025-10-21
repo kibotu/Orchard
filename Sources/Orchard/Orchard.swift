@@ -35,10 +35,10 @@ import Foundation
 public class Orchard {
     
     /// Array of loggers that will receive log messages
-    public static var loggers = [Orchard.Logger]()
+    nonisolated(unsafe) public static var loggers = [Orchard.Logger]()
     
     /// Current tag to be applied to the next log message
-    static private var _tag: String?
+    nonisolated(unsafe) static private var _tag: String?
     static private let lock = NSLock()
 
     static private var tag: String? {
@@ -55,7 +55,7 @@ public class Orchard {
     }
     
     /// Current icon to be applied to the next log message
-    private static var _icon: Character?
+    nonisolated(unsafe) private static var _icon: Character?
     private static let iconLock = NSLock()
 
     private static var icon: Character? {

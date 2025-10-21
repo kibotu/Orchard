@@ -46,9 +46,9 @@ public extension Thread {
 
 public typealias SwiftDemangle = @convention(c) (_ mangledName: UnsafePointer<CChar>?, _ mangledNameLength: Int, _ outputBuffer: UnsafeMutablePointer<CChar>?, _ outputBufferSize: UnsafeMutablePointer<Int>?, _ flags: UInt32) -> UnsafeMutablePointer<CChar>?
 
-public let RTLD_DEFAULT = dlopen(nil, RTLD_NOW)
-public let demangleSymbol = dlsym(RTLD_DEFAULT, "swift_demangle")!
-public let cDemangle = unsafeBitCast(demangleSymbol, to: SwiftDemangle.self)
+nonisolated(unsafe) public let RTLD_DEFAULT = dlopen(nil, RTLD_NOW)
+nonisolated(unsafe) public let demangleSymbol = dlsym(RTLD_DEFAULT, "swift_demangle")!
+nonisolated(unsafe) public let cDemangle = unsafeBitCast(demangleSymbol, to: SwiftDemangle.self)
 
 public func demangle(_ mangled: String) -> String {
     mangled.withCString { cString in

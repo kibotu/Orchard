@@ -10,7 +10,7 @@ public class ConsoleLogger: Orchard.Logger {
     public let level: Orchard.Level = Orchard.Level.verbose
         
     /// Optional tag to categorize log messages
-    private var _tag: String?
+    nonisolated(unsafe) private var _tag: String?
     private let lock = NSLock()
 
     public var tag: String? {
@@ -27,7 +27,7 @@ public class ConsoleLogger: Orchard.Logger {
     }
     
     /// Optional icon to visually represent log messages
-    private var _icon: Character?
+    nonisolated(unsafe) private var _icon: Character?
     private let iconLock = NSLock()
 
     public var icon: Character? {
