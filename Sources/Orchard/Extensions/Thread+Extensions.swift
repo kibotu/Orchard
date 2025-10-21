@@ -7,7 +7,7 @@ public extension Thread {
             .dropFirst()
             .map { line in
                 let parts = line.split(separator: " ")
-                let index = parts[0]
+                let _ = parts[0]
                 let module = parts[1]
                 let method = demangle("\(parts[3])")
                 return "[\(module)] \(method)"

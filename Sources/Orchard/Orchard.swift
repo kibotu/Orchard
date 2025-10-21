@@ -170,7 +170,7 @@ public class Orchard {
         case fatal
         
         /// Returns a human-readable string representation of the log level
-        var displayValue: String {
+        public var displayValue: String {
             switch self {
             case .verbose: return "Verbose"
             case .debug: return "Debug"
@@ -182,7 +182,7 @@ public class Orchard {
         }
         
         /// Returns an icon character representing the log level
-        var icon: Character {
+        public var icon: Character {
             switch self {
             case .verbose: return "🔬"
             case .debug: return "🔍"

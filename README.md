@@ -21,6 +21,19 @@ Orchard is a versatile logging system for Swift applications, designed to provid
 - Customizable log formatting
 - Thread-safe logging operations
 
+## 📱 Demo App
+
+Want to see Orchard in action? Check out the **iOS Demo App**:
+
+```bash
+cd Examples/OrchardDemo
+open OrchardDemo.xcodeproj
+```
+
+Press **⌘+R** in Xcode to run the interactive demo with live log display!
+
+[See Examples →](Examples/)
+
 ### Setup
 
 1. Add the Orchard package to your Swift project.
