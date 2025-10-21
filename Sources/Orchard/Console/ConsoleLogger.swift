@@ -121,7 +121,8 @@ public class ConsoleLogger: Orchard.Logger {
     ///   - line: The line number where the log was called
     open func log(level: Orchard.Level, message: String?, error: (any Error)?, args: [String : any CustomStringConvertible]?, file: String, fileId: String, function: String, line: Int) {
         let invocation = showInvocation ? "/\(fileId.fileFromfileId).\(function):\(line)" : ""
-        print("\(icon ?? level.icon) \(date)[\(tag ?? file.moduleNameFromFile)\(invocation)]\(message.paddedNilOrValue)\(error.paddedNilOrValue)\(paddedToString(args))")
+        let moduleName = NSString(string: fileId).pathComponents.first!
+        print("\(icon ?? level.icon) \(date)[\(tag ?? moduleName)\(invocation)]\(message.paddedNilOrValue)\(error.paddedNilOrValue)\(paddedToString(args))")
         tag = nil
         icon = nil
     }
