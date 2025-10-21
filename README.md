@@ -88,14 +88,14 @@ Never wonder where a log came from again. Orchard automatically captures file, f
 
 ```swift
 Orchard.i("User logged in")
-// Output: ℹ️ 13:54:48.403: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():168] User logged in
-//                           ^^^^^^^^^^^^^^^ module  ^^^^^^^^^^^^^^^ file  ^^^^^^^^^ function  ^^^ line
+// Output: ℹ️ 13:54:48.403: [OrchardDemo/ContentView.runAllExamples():168] User logged in
+//                           ^ module ^^  ^^ file ^^ ^^^ function ^^^  ^^ line number ^^^^^^ message
 ```
 
 Toggle invocation details on/off:
 ```swift
 let logger = ConsoleLogger()
-logger.showInvocation = true   // Shows full path: /File.swift/function():line
+logger.showInvocation = true   // Shows full path: /Module/function():line
 logger.showInvocation = false  // Shows only module name
 ```
 
@@ -154,7 +154,7 @@ let consoleLogger = ConsoleLogger()
 consoleLogger.showTimesStamp = true  // Shows: 13:54:48.402:
 
 // Enable/disable invocation details
-consoleLogger.showInvocation = true  // Shows: /Filename/function():line
+consoleLogger.showInvocation = true  // Shows: /Filename.function():line
 
 Orchard.loggers.append(consoleLogger)
 ```
@@ -198,7 +198,7 @@ enum NetworkError: Error, CustomStringConvertible {
 
 // Message with error
 Orchard.e("Operation failed", NetworkError.connectionFailed(reason: "Host unreachable"))
-// Output: ❌ 13:54:48.403: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():201] Operation failed NetworkError: Connection failed - Host unreachable
+// Output: ❌ 13:54:48.403: [OrchardDemo/ContentView.runAllExamples():201] Operation failed NetworkError: Connection failed - Host unreachable
 
 // Full context: tag, icon, message, and error
 Orchard.tag("Network").icon("⚠️").e("Request timeout", NetworkError.timeout)
@@ -216,7 +216,7 @@ Attach key-value pairs for rich, queryable logs - perfect for analytics and debu
 ```swift
 // User events
 Orchard.i("User logged in", ["userId": "12345", "userName": "John", "method": "oauth"])
-// Output: ℹ️ 13:54:48.413: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():205] User logged in {"userId":"12345","userName":"John","method":"oauth"}
+// Output: ℹ️ 13:54:48.413: [OrchardDemo/ContentView.runAllExamples():205] User logged in {"userId":"12345","userName":"John","method":"oauth"}
 
 // Performance metrics
 Orchard.tag("Performance").d("API response", ["duration": "245ms", "endpoint": "/api/users", "status": "200"])
@@ -232,22 +232,22 @@ Professional logging with built-in visual hierarchy:
 
 ```swift
 Orchard.v("Verbose: Detailed debug information")
-// Output: 🔬 13:54:48.402: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():166] Verbose: Detailed debug information
+// Output: 🔬 13:54:48.402: [OrchardDemo/ContentView.runAllExamples():166] Verbose: Detailed debug information
 
 Orchard.d("Debug: Development information")
-// Output: 🔍 13:54:48.403: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():167] Debug: Development information
+// Output: 🔍 13:54:48.403: [OrchardDemo/ContentView.runAllExamples():167] Debug: Development information
 
 Orchard.i("Info: General information")
-// Output: ℹ️ 13:54:48.403: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():168] Info: General information
+// Output: ℹ️ 13:54:48.403: [OrchardDemo/ContentView.runAllExamples():168] Info: General information
 
 Orchard.w("Warning: Something needs attention")
-// Output: ⚠️ 13:54:48.403: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():169] Warning: Something needs attention
+// Output: ⚠️ 13:54:48.403: [OrchardDemo/ContentView.runAllExamples():169] Warning: Something needs attention
 
 Orchard.e("Error: Something went wrong")
-// Output: ❌ 13:54:48.403: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():170] Error: Something went wrong
+// Output: ❌ 13:54:48.403: [OrchardDemo/ContentView.runAllExamples():170] Error: Something went wrong
 
 Orchard.f("Fatal: Critical error!")
-// Output: ⚡️ 13:54:48.403: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():171] Fatal: Critical error!
+// Output: ⚡️ 13:54:48.403: [OrchardDemo/ContentView.runAllExamples():171] Fatal: Critical error!
 ```
 
 ### 9. Tags for Organization
@@ -274,13 +274,13 @@ Override default level icons for visual categorization:
 
 ```swift
 Orchard.icon("🚀").i("App launched successfully")
-// Output: 🚀 13:54:48.403: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():179] App launched successfully
+// Output: 🚀 13:54:48.403: [OrchardDemo/ContentView.runAllExamples():179] App launched successfully
 
 Orchard.icon("💾").d("Data saved to disk")
-// Output: 💾 13:54:48.403: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():180] Data saved to disk
+// Output: 💾 13:54:48.403: [OrchardDemo/ContentView.runAllExamples():180] Data saved to disk
 
 Orchard.icon("🔐").w("Certificate will expire soon")
-// Output: 🔐 13:54:48.403: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():181] Certificate will expire soon
+// Output: 🔐 13:54:48.403: [OrchardDemo/ContentView.runAllExamples():181] Certificate will expire soon
 ```
 
 ## Advanced Configuration
