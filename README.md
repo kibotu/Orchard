@@ -11,6 +11,8 @@ But let's get serious for a moment. Just because you're developing on iOS doesn'
 
 Orchard is a versatile logging system for Swift applications, designed to provide flexible and contextual logging capabilities.
 
+[![Screenshot](docs/screenshot.png)](docs/screenshot.png)
+
 ## Table of Contents
 
 - [Key Features](#key-features)
