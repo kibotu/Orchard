@@ -47,10 +47,7 @@ Add the Orchard package to your Swift project via Swift Package Manager.
 import Orchard
 
 // Configure console logger with optional features
-let consoleLogger = ConsoleLogger()
-consoleLogger.showTimesStamp = true    // Show timestamps
-consoleLogger.showInvocation = true    // Show file, function, line
-Orchard.loggers.append(consoleLogger)
+Orchard.loggers.append(ConsoleLogger())
 ```
 
 ## Usage Guide
@@ -285,7 +282,12 @@ Orchard.loggers.append(FileLogger())
 
 ### Swift Package Manager
 
-[![Latest Version](https://img.shields.io/github/v/tag/kibotu/Orchard?include_prereleases&sort=semver&label=Latest%20Version)](https://github.com/kibotu/Orchard/releases)
+<table>
+<tr>
+<td width="120px"><b>Latest Version</b></td>
+<td><a href="https://github.com/kibotu/Orchard/releases"><img src="https://img.shields.io/github/v/tag/kibotu/Orchard?include_prereleases&sort=semver&style=for-the-badge" alt="Latest Version"/></a></td>
+</tr>
+</table>
 
 Add the dependency to your `Package.swift`:
 
@@ -302,9 +304,9 @@ targets: [
 ```
 
 Or add it directly in Xcode:
-1. File → Add Package Dependencies
+1. **File → Add Package Dependencies**
 2. Enter: `https://github.com/kibotu/Orchard`
-3. Select the latest version from the releases above
+3. Select the latest version shown above
 
 ## Requirements
 
