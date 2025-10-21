@@ -141,7 +141,7 @@ Add the dependency to your `Package.swift`
 
 ## Requirements
 
-- iOS 16.0 or later
+- iOS 15.0 or later
 - Xcode 15.0 or later
 - Swift 5.10 or later
 
