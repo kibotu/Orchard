@@ -65,5 +65,5 @@ jobs:
           xcodebuild \
             -project "${{ steps.detect.outputs.project_file }}" \
             -scheme "${{ steps.detect.outputs.scheme }}" \
-            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -destination 'platform=iOS Simulator,name=iPhone 17' \
             clean build
