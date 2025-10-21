@@ -11,6 +11,31 @@ But let's get serious for a moment. Just because you're developing on iOS doesn'
 
 Orchard is a versatile logging system for Swift applications, designed to provide flexible and contextual logging capabilities.
 
+## Table of Contents
+
+- [Key Features](#key-features)
+- [📱 Demo App](#-demo-app)
+- [Quick Start](#quick-start)
+  - [Installation](#installation)
+  - [Setup](#setup)
+- [Usage Guide](#usage-guide)
+  - [1. Automatic Invocation Tracking](#1-automatic-invocation-tracking)
+  - [2. Maximum Flexibility](#2-maximum-flexibility)
+  - [3. Multiple Loggers](#3-multiple-loggers)
+  - [4. Console Logger Configuration](#4-console-logger-configuration)
+  - [5. Contextual Logging with Tags & Icons](#5-contextual-logging-with-tags--icons)
+  - [6. Rich Error Logging](#6-rich-error-logging)
+  - [7. Structured Logging with Arguments](#7-structured-logging-with-arguments)
+  - [8. Six Log Levels with Icons](#8-six-log-levels-with-icons)
+  - [9. Tags for Organization](#9-tags-for-organization)
+  - [10. Custom Icons](#10-custom-icons)
+- [Advanced Configuration](#advanced-configuration)
+  - [Custom Logger Implementation](#custom-logger-implementation)
+- [How to install](#how-to-install)
+  - [Swift Package Manager](#swift-package-manager)
+- [Requirements](#requirements)
+- [License](#license)
+
 ## Key Features
 
 - 🎯 **Six Log Levels**: verbose, debug, info, warning, error, and fatal
