@@ -1,14 +1,6 @@
 name: iOS CI
 
-on:
-  push:
-    branches: [ "main" ]
-    paths:
-      - "Examples/OrchardDemo/**"
-  pull_request:
-    branches: [ "main" ]
-    paths:
-      - "Examples/OrchardDemo/**"
+on: [push]
 
 jobs:
   build:
