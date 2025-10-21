@@ -1,21 +1,32 @@
 name: Swift
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-*'
+  pull_request:
+    branches:
+      - master
 
 jobs:
   build:
-    name: Swift ${{ matrix.swift }} on ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest]
-        swift: ["5.10"]
-    runs-on: ${{ matrix.os }}
+    name: Build with Xcode on macOS 26
+    runs-on: macos-26
     steps:
-      - uses: swift-actions/setup-swift@v2
-        with:
-          swift-version: ${{ matrix.swift }}
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Show Xcode and Swift version
+        run: |
+          xcodebuild -version
+          swift --version
+      
       - name: Build
-        run: swift build
+        run: swift build -v
+      
       - name: Run tests
-        run: swift test
+        run: swift test -v

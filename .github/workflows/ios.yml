@@ -1,10 +1,20 @@
 name: iOS CI
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-*'
+  pull_request:
+    branches:
+      - master
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-26
     defaults:
       run:
         working-directory: Examples/OrchardDemo
@@ -13,10 +23,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Xcode
+      - name: Show Xcode and Swift version
         run: |
-          sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
           xcodebuild -version
+          swift --version
 
       - name: Detect Xcode project
         id: detect_project
@@ -35,5 +45,5 @@ jobs:
           xcodebuild \
             -project ${{ steps.detect_project.outputs.project }} \
             -scheme ${{ steps.detect_scheme.outputs.scheme }} \
-            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
             clean build
