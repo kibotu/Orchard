@@ -36,5 +36,5 @@ Orchard.icon("🚀").i("App launched")
 ## Requirements
 
 - Xcode 15.0+
-- iOS 16.0+
+- iOS 15.0+
 
