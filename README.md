@@ -47,7 +47,10 @@ Add the Orchard package to your Swift project via Swift Package Manager.
 import Orchard
 
 // Configure console logger with optional features
-Orchard.loggers.append(ConsoleLogger())
+let consoleLogger = ConsoleLogger()
+consoleLogger.showTimesStamp = true    // Show timestamps
+consoleLogger.showInvocation = true    // Show file, function, line
+Orchard.loggers.append(consoleLogger)
 ```
 
 ## Usage Guide
