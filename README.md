@@ -127,7 +127,7 @@ let consoleLogger = ConsoleLogger()
 consoleLogger.showTimesStamp = true  // Shows: 13:54:48.402:
 
 // Enable/disable invocation details
-consoleLogger.showInvocation = true  // Shows: /ContentView.swift/functionName():line
+consoleLogger.showInvocation = true  // Shows: /Filename/function():line
 
 Orchard.loggers.append(consoleLogger)
 ```
