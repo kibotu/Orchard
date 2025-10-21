@@ -15,9 +15,6 @@ on:
 jobs:
   build:
     runs-on: macos-26
-    defaults:
-      run:
-        working-directory: Examples/OrchardDemo
 
     steps:
       - name: Checkout
@@ -31,15 +28,26 @@ jobs:
       - name: Detect Xcode project and scheme
         id: detect
         run: |
-          PROJECT_FILE=$(find . -name "*.xcodeproj" -maxdepth 1 | head -n 1 | sed 's|^\./||')
-          echo "Found project: $PROJECT_FILE"
+          # Find the first .xcodeproj file recursively
+          PROJECT_PATH=$(find . -name "*.xcodeproj" -type d | head -n 1)
           
-          if [ -z "$PROJECT_FILE" ]; then
+          if [ -z "$PROJECT_PATH" ]; then
             echo "Error: No Xcode project found"
             exit 1
           fi
           
-          SCHEME=$(xcodebuild -list -json -project "$PROJECT_FILE" | jq -r '.project.schemes[0]')
+          echo "Found project at: $PROJECT_PATH"
+          
+          # Extract the directory containing the project
+          PROJECT_DIR=$(dirname "$PROJECT_PATH")
+          echo "Project directory: $PROJECT_DIR"
+          
+          # Extract just the project filename
+          PROJECT_FILE=$(basename "$PROJECT_PATH")
+          echo "Project file: $PROJECT_FILE"
+          
+          # Get the scheme
+          SCHEME=$(xcodebuild -list -json -project "$PROJECT_PATH" | jq -r '.project.schemes[0]')
           echo "Found scheme: $SCHEME"
           
           if [ -z "$SCHEME" ] || [ "$SCHEME" = "null" ]; then
@@ -47,13 +55,15 @@ jobs:
             exit 1
           fi
           
-          echo "project=$PROJECT_FILE" >> $GITHUB_OUTPUT
+          echo "project_dir=$PROJECT_DIR" >> $GITHUB_OUTPUT
+          echo "project_file=$PROJECT_FILE" >> $GITHUB_OUTPUT
           echo "scheme=$SCHEME" >> $GITHUB_OUTPUT
 
       - name: Build iOS app
+        working-directory: ${{ steps.detect.outputs.project_dir }}
         run: |
           xcodebuild \
-            -project "${{ steps.detect.outputs.project }}" \
+            -project "${{ steps.detect.outputs.project_file }}" \
             -scheme "${{ steps.detect.outputs.scheme }}" \
             -destination 'platform=iOS Simulator,name=iPhone 16' \
             clean build
