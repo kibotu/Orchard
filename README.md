@@ -13,13 +13,14 @@ Orchard is a versatile logging system for Swift applications, designed to provid
 
 ## Key Features
 
-- Multiple log levels: verbose, debug, info, warning, error, and fatal
-- Support for multiple logging backends
-- Contextual logging with tags and custom icons
-- Automatic capture of file, function, and line information
-- Optional timestamp logging
-- Customizable log formatting
-- Thread-safe logging operations
+- 🎯 **Six Log Levels**: verbose, debug, info, warning, error, and fatal
+- 🔌 **Multiple Logging Backends**: Support for custom loggers (Console, File, Remote, etc.)
+- 🏷️ **Tags**: Categorize logs by module, feature, or context
+- 🎨 **Custom Icons**: Visual indicators for different log types
+- 📍 **Automatic Invocation Tracking**: Captures file, function, and line information
+- ⏰ **Timestamp Support**: Optional millisecond-precision timestamps
+- 🔄 **Flexible Parameters**: Any combination of message, error, and arguments
+- 🧵 **Thread-Safe**: Safe for concurrent logging operations
 
 ## 📱 Demo App
 
@@ -34,110 +35,276 @@ Press **⌘+R** in Xcode to run the interactive demo with live log display!
 
 [See Examples →](Examples/)
 
+## Quick Start
+
+### Installation
+
+Add the Orchard package to your Swift project via Swift Package Manager.
+
 ### Setup
 
-1. Add the Orchard package to your Swift project.
-2. Import Orchard in your Swift files:
 ```swift
 import Orchard
-```
-3. Add loggers to the Orchard system
-```swift
-Orchard.loggers.append(ConsoleLogger())
-```
-### Basic Usage
 
-```swift
-// Simple log message
-Orchard.i("User logged in successfully")
-
-// Log with additional context
-Orchard.e("Failed to save data", error, ["userId": user.id])
-
-// Use tags for categorization
-Orchard.tag("NetworkManager").d("Request started")
-
-// Custom icons
-Orchard.icon("🚀").i("App launched")
-
-// Focus on convenience
-
-// log only messages
-Orchard.v("verbose")
-Orchard.i("info")
-Orchard.d("debug")
-Orchard.w("warning")
-Orchard.e("error")
-Orchard.f("fatal")
-
-// only errors        
-let error = HttpError.blacklisted
-Orchard.v(error)
-Orchard.i(error)
-Orchard.d(error)
-Orchard.w(error)
-Orchard.e(error)
-Orchard.f(error)
-
-// messages and errors
-Orchard.v("verbose", error)
-Orchard.i("info", error)
-Orchard.d("debug", error)
-Orchard.w("warning", error)
-Orchard.e("error", error)
-Orchard.f("fatal", error)
-
-// message and arguments
-let args = ["lorem" : "ipsum"]
-Orchard.v("verbose", args)
-Orchard.i("info", args)
-Orchard.d("debug", args)
-Orchard.w("warning", args)
-Orchard.e("error", args)
-Orchard.f("fatal", args)
-
-// message, error and arguments
-Orchard.v("verbose", error, args)
-Orchard.i("info", error, args)
-Orchard.d("debug", error, args)
-Orchard.w("warning", error, args)
-Orchard.e("error", error, args)
-Orchard.f("fatal", error, args)
-```
-
-### Advanced Configuration
-
-```swift
-// Configure console logger
+// Configure console logger with optional features
 let consoleLogger = ConsoleLogger()
-consoleLogger.showTimesStamp = true
-consoleLogger.showInvocation = true
+consoleLogger.showTimesStamp = true    // Show timestamps
+consoleLogger.showInvocation = true    // Show file, function, line
 Orchard.loggers.append(consoleLogger)
+```
 
-// Add custom loggers
-class MyCustomLogger: Orchard.Logger {
-    // Implement logger methods
+## Usage Guide
+
+### 1. Automatic Invocation Tracking
+
+Never wonder where a log came from again. Orchard automatically captures file, function, and line:
+
+```swift
+Orchard.i("User logged in")
+// Output: ℹ️ 13:54:48.403: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():168] User logged in
+//                           ^^^^^^^^^^^^^^^ module  ^^^^^^^^^^^^^^^ file  ^^^^^^^^^ function  ^^^ line
+```
+
+Toggle invocation details on/off:
+```swift
+let logger = ConsoleLogger()
+logger.showInvocation = true   // Shows full path: /File.swift/function():line
+logger.showInvocation = false  // Shows only module name
+```
+
+### 2. Maximum Flexibility
+
+Mix and match any combination of message, error, and arguments:
+
+```swift
+// Message only
+Orchard.i("App started")
+
+// Error only
+Orchard.e(error)
+
+// Message + Error
+Orchard.e("Failed to load data", error)
+
+// Message + Arguments
+Orchard.i("User action", ["action": "tap", "button": "submit"])
+
+// Error + Arguments
+Orchard.e(error, ["context": "startup", "retry": "false"])
+
+// Message + Error + Arguments
+Orchard.e("Request failed", error, ["url": "api.example.com", "method": "POST"])
+
+// Everything: tag, icon, message, error, and arguments
+Orchard.tag("API").icon("🔥").e("Critical failure", error, ["endpoint": "/users", "status": "500", "retry": "3"])
+```
+
+### 3. Multiple Loggers
+
+Log to multiple destinations simultaneously:
+
+```swift
+// Send logs to console, file, and remote server at once
+Orchard.loggers.append(ConsoleLogger())
+Orchard.loggers.append(FileLogger())
+Orchard.loggers.append(RemoteLogger())
+
+// Every log call reaches all registered loggers
+Orchard.i("User logged in")
+// → Appears in console
+// → Written to log file
+// → Sent to analytics server
+```
+
+### 4. Console Logger Configuration
+
+Customize what information appears in your logs:
+
+```swift
+let consoleLogger = ConsoleLogger()
+
+// Enable/disable timestamps
+consoleLogger.showTimesStamp = true  // Shows: 13:54:48.402:
+
+// Enable/disable invocation details
+consoleLogger.showInvocation = true  // Shows: /ContentView.swift/functionName():line
+
+Orchard.loggers.append(consoleLogger)
+```
+
+### 5. Contextual Logging with Tags & Icons
+
+The killer feature: combine tags and custom icons for instantly recognizable, categorized logs:
+
+```swift
+// Payment processing
+Orchard.tag("Payment").icon("💳").i("Payment processed: $99.99")
+// Output: 💳 13:54:48.403: [Payment/ContentView.runAllExamples():184] Payment processed: $99.99
+
+// Analytics tracking
+Orchard.tag("Analytics").icon("📊").d("Event tracked: button_click")
+// Output: 📊 13:54:48.403: [Analytics/ContentView.runAllExamples():185] Event tracked: button_click
+
+// Network monitoring
+Orchard.tag("Network").icon("🌐").i("Connected to server")
+// Output: 🌐 13:54:48.403: [Network/ContentView.runAllExamples():181] Connected to server
+```
+
+### 6. Rich Error Logging
+
+Log errors with full context - message, error object, and metadata in one call:
+
+```swift
+enum NetworkError: Error, CustomStringConvertible {
+    case timeout
+    case connectionFailed(reason: String)
+    
+    var description: String {
+        switch self {
+        case .timeout:
+            return "NetworkError: Request timed out"
+        case .connectionFailed(let reason):
+            return "NetworkError: Connection failed - \(reason)"
+        }
+    }
 }
-Orchard.loggers.append(MyCustomLogger())
+
+// Message with error
+Orchard.e("Operation failed", NetworkError.connectionFailed(reason: "Host unreachable"))
+// Output: ❌ 13:54:48.403: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():201] Operation failed NetworkError: Connection failed - Host unreachable
+
+// Full context: tag, icon, message, and error
+Orchard.tag("Network").icon("⚠️").e("Request timeout", NetworkError.timeout)
+// Output: ⚠️ 13:54:48.413: [Network/ContentView.runAllExamples():202] Request timeout NetworkError: Request timed out
+
+// Add metadata for debugging
+Orchard.tag("API").icon("🔥").e("Request failed", NetworkError.timeout, ["endpoint": "/users", "retry": "3"])
+// Output: 🔥 13:54:48.413: [API/ContentView.runAllExamples():203] Request failed NetworkError: Request timed out {"endpoint":"/users","retry":"3"}
+```
+
+### 7. Structured Logging with Arguments
+
+Attach key-value pairs for rich, queryable logs - perfect for analytics and debugging:
+
+```swift
+// User events
+Orchard.i("User logged in", ["userId": "12345", "userName": "John", "method": "oauth"])
+// Output: ℹ️ 13:54:48.413: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():205] User logged in {"userId":"12345","userName":"John","method":"oauth"}
+
+// Performance metrics
+Orchard.tag("Performance").d("API response", ["duration": "245ms", "endpoint": "/api/users", "status": "200"])
+// Output: 🔍 13:54:48.413: [Performance/ContentView.runAllExamples():206] API response {"duration":"245ms","endpoint":"/api/users","status":"200"}
+
+// Error context
+Orchard.tag("Database").e("Query failed", error, ["query": "SELECT * FROM users", "retry": "false"])
+```
+
+### 8. Six Log Levels with Icons
+
+Professional logging with built-in visual hierarchy:
+
+```swift
+Orchard.v("Verbose: Detailed debug information")
+// Output: 🔬 13:54:48.402: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():166] Verbose: Detailed debug information
+
+Orchard.d("Debug: Development information")
+// Output: 🔍 13:54:48.403: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():167] Debug: Development information
+
+Orchard.i("Info: General information")
+// Output: ℹ️ 13:54:48.403: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():168] Info: General information
+
+Orchard.w("Warning: Something needs attention")
+// Output: ⚠️ 13:54:48.403: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():169] Warning: Something needs attention
+
+Orchard.e("Error: Something went wrong")
+// Output: ❌ 13:54:48.403: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():170] Error: Something went wrong
+
+Orchard.f("Fatal: Critical error!")
+// Output: ⚡️ 13:54:48.403: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():171] Fatal: Critical error!
+```
+
+### 9. Tags for Organization
+
+Categorize logs by module, feature, or any context you need:
+
+```swift
+// Network operations
+Orchard.tag("Network").i("HTTP request completed successfully")
+// Output: ℹ️ 13:54:48.403: [Network/ContentView.runAllExamples():174] HTTP request completed successfully
+
+// Database operations
+Orchard.tag("Database").d("Query executed in 45ms")
+// Output: 🔍 13:54:48.403: [Database/ContentView.runAllExamples():175] Query executed in 45ms
+
+// Authentication
+Orchard.tag("Auth").w("Token will expire in 5 minutes")
+// Output: ⚠️ 13:54:48.403: [Auth/ContentView.runAllExamples():176] Token will expire in 5 minutes
+```
+
+### 10. Custom Icons
+
+Override default level icons for visual categorization:
+
+```swift
+Orchard.icon("🚀").i("App launched successfully")
+// Output: 🚀 13:54:48.403: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():179] App launched successfully
+
+Orchard.icon("💾").d("Data saved to disk")
+// Output: 💾 13:54:48.403: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():180] Data saved to disk
+
+Orchard.icon("🔐").w("Certificate will expire soon")
+// Output: 🔐 13:54:48.403: [OrchardDemo/ContentView.swift/ContentView.runAllExamples():181] Certificate will expire soon
+```
+
+## Advanced Configuration
+
+### Custom Logger Implementation
+
+Create your own logger by implementing the `Orchard.Logger` protocol:
+
+```swift
+class FileLogger: Orchard.Logger {
+    let level: Orchard.Level = .info
+    var tag: String?
+    var icon: Character?
+    
+    func info(_ message: String?, _ error: Error?, _ args: [String: CustomStringConvertible]?, 
+              _ file: String, _ fileId: String, _ function: String, _ line: Int) {
+        // Write to file...
+        let logEntry = "\(Date()): [\(tag ?? "App")] \(message ?? "")"
+        // Append to file
+    }
+    
+    // Implement other level methods (verbose, debug, warning, error, fatal)...
+}
+
+Orchard.loggers.append(FileLogger())
 ```
 
 ## How to install
 
 ### Swift Package Manager
 
-Add the dependency to your `Package.swift`
+[![Latest Version](https://img.shields.io/github/v/tag/kibotu/Orchard?include_prereleases&sort=semver&label=Latest%20Version)](https://github.com/kibotu/Orchard/releases)
+
+Add the dependency to your `Package.swift`:
 
 ```swift
-    products: [
-      ...
-    ]
-    dependencies: [
-        .package(url: "https://github.com/kibotu/Orchard", from: "1.0.2"),
-    ],
-    targets: [
-      ...
-    ]
+dependencies: [
+    .package(url: "https://github.com/kibotu/Orchard", from: "1.0.0"),
+],
+targets: [
+    .target(
+        name: "YourTarget",
+        dependencies: ["Orchard"]
+    )
+]
 ```
+
+Or add it directly in Xcode:
+1. File → Add Package Dependencies
+2. Enter: `https://github.com/kibotu/Orchard`
+3. Select the latest version from the releases above
 
 ## Requirements
 
