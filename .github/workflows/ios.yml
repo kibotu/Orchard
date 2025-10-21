@@ -28,22 +28,32 @@ jobs:
           xcodebuild -version
           swift --version
 
-      - name: Detect Xcode project
-        id: detect_project
+      - name: Detect Xcode project and scheme
+        id: detect
         run: |
-          PROJECT_FILE=$(find . -name "*.xcodeproj" -maxdepth 1 | head -n 1)
+          PROJECT_FILE=$(find . -name "*.xcodeproj" -maxdepth 1 | head -n 1 | sed 's|^\./||')
+          echo "Found project: $PROJECT_FILE"
+          
+          if [ -z "$PROJECT_FILE" ]; then
+            echo "Error: No Xcode project found"
+            exit 1
+          fi
+          
+          SCHEME=$(xcodebuild -list -json -project "$PROJECT_FILE" | jq -r '.project.schemes[0]')
+          echo "Found scheme: $SCHEME"
+          
+          if [ -z "$SCHEME" ] || [ "$SCHEME" = "null" ]; then
+            echo "Error: No scheme found"
+            exit 1
+          fi
+          
           echo "project=$PROJECT_FILE" >> $GITHUB_OUTPUT
-
-      - name: Detect scheme
-        id: detect_scheme
-        run: |
-          SCHEME=$(xcodebuild -list -json -project ${{ steps.detect_project.outputs.project }} | jq -r '.project.schemes[0]')
           echo "scheme=$SCHEME" >> $GITHUB_OUTPUT
 
       - name: Build iOS app
         run: |
           xcodebuild \
-            -project ${{ steps.detect_project.outputs.project }} \
-            -scheme ${{ steps.detect_scheme.outputs.scheme }} \
+            -project "${{ steps.detect.outputs.project }}" \
+            -scheme "${{ steps.detect.outputs.scheme }}" \
             -destination 'platform=iOS Simulator,name=iPhone 16' \
             clean build
