@@ -11,9 +11,9 @@ class TestableConsoleLogger: ConsoleLogger {
         // Apply module name mapper if provided, otherwise use default
         let moduleName: String
         if let mapper = config.moduleNameMapper {
-            moduleName = mapper(fileId)
+            moduleName = mapper(fileId.moduleNameFromFile)
         } else {
-            moduleName = file.moduleNameFromFile
+            moduleName = fileId.moduleNameFromFile
         }
         
         lastLoggedMessage = "\(icon ?? level.icon) \(date)[\(tag ?? moduleName)\(invocation)]\(message.paddedNilOrValue)\(error.paddedNilOrValue)\(paddedToString(args))"

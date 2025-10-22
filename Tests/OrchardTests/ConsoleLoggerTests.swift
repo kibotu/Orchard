@@ -110,9 +110,9 @@ class ConsoleLoggerTests: XCTestCase {
         let config = ConsoleLoggerConfig(
             showTimestamp: false,
             showInvocation: false,
-            moduleNameMapper: { fileId in
-                // Custom mapper that converts to uppercase
-                return fileId.moduleNameFromFile.uppercased()
+            moduleNameMapper: { moduleName in
+                // Custom mapper that converts module name to uppercase
+                return moduleName.uppercased()
             }
         )
         let logger = TestableConsoleLogger(config: config)
@@ -139,5 +139,61 @@ class ConsoleLoggerTests: XCTestCase {
         
         // Verify it updates the config
         XCTAssertFalse(consoleLogger.config.showTimestamp)
+    }
+    
+    func testBuilderStyleInitialization() {
+        let logger = TestableConsoleLogger { config in
+            config.showTimestamp = false
+            config.showInvocation = true
+            config.timestampFormat = "HH:mm:ss"
+        }
+        
+        logger.info("Builder test", nil, nil, #file, #fileID, #function, #line)
+        
+        // Should not contain timestamp
+        XCTAssertFalse(logger.lastLoggedMessage.matches("\\d{2}:\\d{2}:\\d{2}\\.\\d{3}:"))
+        // Should contain invocation
+        XCTAssertTrue(logger.lastLoggedMessage.contains("/ConsoleLoggerTests.testBuilderStyleInitialization"))
+        // Should contain message
+        XCTAssertTrue(logger.lastLoggedMessage.contains("Builder test"))
+    }
+    
+    func testBuilderStyleWithModuleNameMapper() {
+        let logger = TestableConsoleLogger { config in
+            config.showTimestamp = false
+            config.showInvocation = false
+            config.moduleNameMapper = { moduleName in
+                return moduleName.replacingOccurrences(of: "OrchardTests", with: "Tests")
+            }
+        }
+        
+        logger.info("Mapper builder test", nil, nil, #file, #fileID, #function, #line)
+        
+        // Should contain the mapped module name
+        XCTAssertTrue(logger.lastLoggedMessage.contains("[Tests]"))
+        // Should NOT contain the original module name
+        XCTAssertFalse(logger.lastLoggedMessage.contains("[OrchardTests]"))
+    }
+    
+    func testBuilderStyleWithAllOptions() {
+        let logger = TestableConsoleLogger { config in
+            config.showTimestamp = true
+            config.timestampFormat = "yyyy-MM-dd"
+            config.showInvocation = true
+            config.moduleNameMapper = { moduleName in
+                return "[\(moduleName.uppercased())]"
+            }
+        }
+        
+        logger.info("All options test", nil, nil, #file, #fileID, #function, #line)
+        
+        print("DEBUG: Logged message: \(logger.lastLoggedMessage)")
+        
+        // Should contain custom timestamp format
+        XCTAssertTrue(logger.lastLoggedMessage.matches("\\d{4}-\\d{2}-\\d{2}:"))
+        // Should contain mapped module name (with extra brackets from mapper)
+        XCTAssertTrue(logger.lastLoggedMessage.contains("[[ORCHARDTESTS]]") || logger.lastLoggedMessage.contains("[ORCHARDTESTS]"))
+        // Should contain invocation
+        XCTAssertTrue(logger.lastLoggedMessage.contains("/ConsoleLoggerTests.testBuilderStyleWithAllOptions"))
     }
 }
