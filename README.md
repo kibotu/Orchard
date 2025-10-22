@@ -382,18 +382,14 @@ Orchard.loggers.append(FileLogger())
 
 ### Swift Package Manager
 
-<table>
-<tr>
-<td width="120px"><b>Latest Version</b></td>
-<td><a href="https://github.com/kibotu/Orchard/releases"><img src="https://img.shields.io/github/v/tag/kibotu/Orchard?include_prereleases&sort=semver&style=for-the-badge" alt="Latest Version"/></a></td>
-</tr>
-</table>
+| Latest Version | [![GitHub Tag](https://img.shields.io/github/v/tag/kibotu/Orchard?include_prereleases&sort=semver)](https://github.com/kibotu/Orchard/releases) |
+|----------------|---------|
 
 Add the dependency to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/kibotu/Orchard", from: "1.0.0"),
+    .package(url: "https://github.com/kibotu/Orchard", from: "<latest-version>"),
 ],
 targets: [
     .target(

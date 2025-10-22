@@ -187,8 +187,6 @@ class ConsoleLoggerTests: XCTestCase {
         
         logger.info("All options test", nil, nil, #file, #fileID, #function, #line)
         
-        print("DEBUG: Logged message: \(logger.lastLoggedMessage)")
-        
         // Should contain custom timestamp format
         XCTAssertTrue(logger.lastLoggedMessage.matches("\\d{4}-\\d{2}-\\d{2}:"))
         // Should contain mapped module name (with extra brackets from mapper)
