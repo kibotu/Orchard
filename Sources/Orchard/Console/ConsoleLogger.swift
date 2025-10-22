@@ -3,8 +3,41 @@ import Foundation
 /// A concrete implementation of Orchard.Logger that logs messages to the console
 public class ConsoleLogger: Orchard.Logger {
     
+    /// Configuration for logger behavior and formatting
+    public var config: ConsoleLoggerConfig {
+        didSet {
+            // Update formatter when config changes
+            formatter.dateFormat = config.timestampFormat
+        }
+    }
+    
     /// Public initializer for ConsoleLogger
-    public init() {}
+    /// - Parameter config: Optional configuration (defaults to ConsoleLoggerConfig.default)
+    public init(config: ConsoleLoggerConfig = .default) {
+        self.config = config
+        self.formatter = DateFormatter()
+        self.formatter.dateFormat = config.timestampFormat
+    }
+    
+    /// Convenience initializer with configuration closure
+    /// - Parameter configure: A closure that receives an inout ConsoleLoggerConfig to configure
+    ///
+    /// Example:
+    /// ```swift
+    /// let logger = ConsoleLogger { config in
+    ///     config.showTimestamp = true
+    ///     config.timestampFormat = "yyyy-MM-dd HH:mm:ss.SSS"
+    ///     config.showInvocation = true
+    ///     config.moduleNameMapper = { module in
+    ///         return module.replacingOccurrences(of: "OrchardDemo", with: "Demo")
+    ///     }
+    /// }
+    /// ```
+    public convenience init(configure: (inout ConsoleLoggerConfig) -> Void) {
+        var config = ConsoleLoggerConfig.default
+        configure(&config)
+        self.init(config: config)
+    }
     
     /// The minimum log level this logger will process (set to verbose by default)
     public let level: Orchard.Level = Orchard.Level.verbose
@@ -44,21 +77,25 @@ public class ConsoleLogger: Orchard.Logger {
     }
     
     /// Determines whether to show timestamps in log messages
-    /// Persisted using @Storage property wrapper with key "ConsoleLogger_Log_Timestamp"
-    public var showTimesStamp: Bool = true
-    
-    /// Determines whether to show invocation details (file, function, line) in log messages
-    /// Persisted using @Storage property wrapper with key "ConsoleLogger_Log_Invocation"
-    public var showInvocation: Bool = true
-    
-    /// Lazy-initialized date formatter for timestamp formatting
-    private lazy var formatter = DateFormatter().apply {
-        $0.dateFormat = "HH:mm:ss.SSS"
+    /// Forwards to config.showTimestamp for backward compatibility
+    public var showTimesStamp: Bool {
+        get { config.showTimestamp }
+        set { config.showTimestamp = newValue }
     }
     
-    /// Computed property that returns a formatted timestamp string if showTimesStamp is true, otherwise an empty string
+    /// Determines whether to show invocation details (file, function, line) in log messages
+    /// Forwards to config.showInvocation for backward compatibility
+    public var showInvocation: Bool {
+        get { config.showInvocation }
+        set { config.showInvocation = newValue }
+    }
+    
+    /// Date formatter for timestamp formatting
+    private var formatter: DateFormatter
+    
+    /// Computed property that returns a formatted timestamp string if showTimestamp is true, otherwise an empty string
     var date: String {
-        if showTimesStamp {
+        if config.showTimestamp {
             "\(formatter.string(from: Date())): "
         } else {
             ""
@@ -121,8 +158,17 @@ public class ConsoleLogger: Orchard.Logger {
     ///   - line: The line number where the log was called
     open func log(level: Orchard.Level, message: String?, error: (any Error)?, args: [String : any CustomStringConvertible]?, file: String, fileId: String, function: String, line: Int) {
         let functionName = function.components(separatedBy: "(").first ?? function
-        let invocation = showInvocation ? "/\(fileId.fileFromfileId).\(functionName):\(line)" : ""
-        print("\(icon ?? level.icon) \(date)[\(tag ?? fileId.moduleNameFromFile)\(invocation)]\(message.paddedNilOrValue)\(error.paddedNilOrValue)\(paddedToString(args))")
+        let invocation = config.showInvocation ? "/\(fileId.fileFromfileId).\(functionName):\(line)" : ""
+        
+        // Apply module name mapper if provided, otherwise use default
+        let moduleName: String
+        if let mapper = config.moduleNameMapper {
+            moduleName = mapper(fileId.moduleNameFromFile)
+        } else {
+            moduleName = fileId.moduleNameFromFile
+        }
+        
+        print("\(icon ?? level.icon) \(date)[\(tag ?? moduleName)\(invocation)]\(message.paddedNilOrValue)\(error.paddedNilOrValue)\(paddedToString(args))")
         tag = nil
         icon = nil
     }

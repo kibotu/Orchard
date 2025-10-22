@@ -94,4 +94,50 @@ class ConsoleLoggerTests: XCTestCase {
         // Should NOT contain the parameter signature
         XCTAssertFalse(consoleLogger.lastLoggedMessage.contains("log(_:_:)"))
     }
+    
+    func testCustomTimestampFormat() {
+        let config = ConsoleLoggerConfig(
+            showTimestamp: true,
+            timestampFormat: "yyyy-MM-dd HH:mm:ss"
+        )
+        let logger = TestableConsoleLogger(config: config)
+        logger.info("Custom timestamp test", nil, nil, #file, #fileID, #function, #line)
+        // Should match the custom timestamp format pattern
+        XCTAssertTrue(logger.lastLoggedMessage.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}:"))
+    }
+    
+    func testModuleNameMapper() {
+        let config = ConsoleLoggerConfig(
+            showTimestamp: false,
+            showInvocation: false,
+            moduleNameMapper: { fileId in
+                // Custom mapper that converts to uppercase
+                return fileId.moduleNameFromFile.uppercased()
+            }
+        )
+        let logger = TestableConsoleLogger(config: config)
+        logger.info("Module mapper test", nil, nil, #file, #fileID, #function, #line)
+        // Should contain the uppercase module name
+        XCTAssertTrue(logger.lastLoggedMessage.contains("[ORCHARDTESTS]"))
+    }
+    
+    func testConfigCanBeUpdated() {
+        consoleLogger.config.showTimestamp = false
+        consoleLogger.config.showInvocation = false
+        consoleLogger.info("Config update test", nil, nil, #file, #fileID, #function, #line)
+        // Should not contain timestamp
+        XCTAssertFalse(consoleLogger.lastLoggedMessage.matches("\\d{2}:\\d{2}:\\d{2}\\.\\d{3}:"))
+        // Should not contain invocation
+        XCTAssertFalse(consoleLogger.lastLoggedMessage.contains("/ConsoleLoggerTests.testConfigCanBeUpdated"))
+    }
+    
+    func testBackwardCompatibilityWithShowTimesStamp() {
+        // Test that the old property name still works
+        consoleLogger.showTimesStamp = false
+        consoleLogger.info("Backward compat test", nil, nil, #file, #fileID, #function, #line)
+        XCTAssertFalse(consoleLogger.lastLoggedMessage.matches("\\d{2}:\\d{2}:\\d{2}\\.\\d{3}:"))
+        
+        // Verify it updates the config
+        XCTAssertFalse(consoleLogger.config.showTimestamp)
+    }
 }

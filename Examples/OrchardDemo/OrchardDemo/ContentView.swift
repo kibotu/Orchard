@@ -109,10 +109,15 @@ struct ContentView: View {
     }
     
     private func setupOrchard() {
-        // Setup console logger
-        let consoleLogger = ConsoleLogger()
-        consoleLogger.showTimesStamp = true
-        consoleLogger.showInvocation = true
+        // Setup console logger with builder-style configuration
+        let consoleLogger = ConsoleLogger { config in
+            config.showTimestamp = true
+            config.timestampFormat = "yyyy-MM-dd HH:mm:ss.SSS"  // Custom date format
+            config.showInvocation = true
+            config.moduleNameMapper = { module in
+                return module.replacingOccurrences(of: "OrchardDemo", with: "Demo")
+            }
+        }
         Orchard.loggers.append(consoleLogger)
         
         // Setup UI logger

@@ -154,9 +154,79 @@ let consoleLogger = ConsoleLogger()
 consoleLogger.showTimesStamp = true  // Shows: 13:54:48.402:
 
 // Enable/disable invocation details
-consoleLogger.showInvocation = true  // Shows: /Filename.function():line
+consoleLogger.showInvocation = true  // Shows: /Filename.function:line
 
 Orchard.loggers.append(consoleLogger)
+```
+
+#### Advanced Configuration with ConsoleLoggerConfig
+
+For more control, use `ConsoleLoggerConfig` to customize timestamp format and module name mapping.
+
+**Option 1: Builder-style configuration (recommended)**
+
+```swift
+let consoleLogger = ConsoleLogger { config in
+    config.showTimestamp = true
+    config.timestampFormat = "yyyy-MM-dd HH:mm:ss.SSS"  // Custom date format
+    config.showInvocation = true
+    config.moduleNameMapper = { moduleName in
+        // Custom module name transformation
+        // The mapper receives the extracted module name and can transform it
+        return moduleName.replacingOccurrences(of: "OrchardDemo", with: "Demo")
+    }
+}
+Orchard.loggers.append(consoleLogger)
+```
+
+**Option 2: Config struct initialization**
+
+```swift
+let config = ConsoleLoggerConfig(
+    showTimestamp: true,
+    timestampFormat: "yyyy-MM-dd HH:mm:ss.SSS",  // Custom date format
+    showInvocation: true,
+    moduleNameMapper: { moduleName in
+        // Custom module name transformation
+        return moduleName.components(separatedBy: "/").last ?? moduleName
+    }
+)
+
+let consoleLogger = ConsoleLogger(config: config)
+Orchard.loggers.append(consoleLogger)
+```
+
+**Option 3: Modify config after initialization**
+
+```swift
+let consoleLogger = ConsoleLogger()
+consoleLogger.config.timestampFormat = "HH:mm:ss"
+consoleLogger.config.moduleNameMapper = { moduleName in
+    return "[\(moduleName.uppercased())]"
+}
+Orchard.loggers.append(consoleLogger)
+```
+
+**Configuration Options:**
+- `showTimestamp`: Enable/disable timestamps (default: `true`)
+- `timestampFormat`: DateFormatter format string (default: `"HH:mm:ss.SSS"`)
+- `showInvocation`: Show file/function/line details (default: `true`)
+- `moduleNameMapper`: Transform module names with a custom closure (default: `nil`)
+  - The closure receives the extracted module name from `fileId.moduleNameFromFile`
+  - Return the transformed module name to display in logs
+
+**Example with custom module name mapper:**
+```swift
+// Shorten module names: "MyApp/ViewModels/UserViewModel" → "UserViewModel"
+let logger = ConsoleLogger { config in
+    config.moduleNameMapper = { moduleName in
+        return moduleName.components(separatedBy: "/").last ?? moduleName
+    }
+}
+Orchard.loggers.append(logger)
+
+Orchard.i("User logged in")
+// Output: ℹ️ 13:54:48.403: [UserViewModel/login:42] User logged in
 ```
 
 ### 5. Contextual Logging with Tags & Icons
