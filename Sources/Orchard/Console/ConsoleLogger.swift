@@ -120,7 +120,8 @@ public class ConsoleLogger: Orchard.Logger {
     ///   - function: The function where the log was called
     ///   - line: The line number where the log was called
     open func log(level: Orchard.Level, message: String?, error: (any Error)?, args: [String : any CustomStringConvertible]?, file: String, fileId: String, function: String, line: Int) {
-        let invocation = showInvocation ? "/\(fileId.fileFromfileId).\(function):\(line)" : ""
+        let functionName = function.components(separatedBy: "(").first ?? function
+        let invocation = showInvocation ? "/\(fileId.fileFromfileId).\(functionName):\(line)" : ""
         print("\(icon ?? level.icon) \(date)[\(tag ?? fileId.moduleNameFromFile)\(invocation)]\(message.paddedNilOrValue)\(error.paddedNilOrValue)\(paddedToString(args))")
         tag = nil
         icon = nil

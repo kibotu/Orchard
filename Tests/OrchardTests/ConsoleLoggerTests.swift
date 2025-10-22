@@ -74,4 +74,24 @@ class ConsoleLoggerTests: XCTestCase {
         consoleLogger.info("No invocation test", nil, nil, #file, #fileID, #function, #line)
         XCTAssertFalse(consoleLogger.lastLoggedMessage.contains("/ConsoleLoggerTests.testLoggingWithoutInvocation"))
     }
+    
+    func testFunctionSignatureIsStripped() {
+        consoleLogger.showInvocation = true
+        consoleLogger.info("Signature test", nil, nil, #file, #fileID, #function, #line)
+        // Should contain function name without parentheses
+        XCTAssertTrue(consoleLogger.lastLoggedMessage.contains("/ConsoleLoggerTests.testFunctionSignatureIsStripped:"))
+        // Should NOT contain parentheses from function signature
+        XCTAssertFalse(consoleLogger.lastLoggedMessage.contains("testFunctionSignatureIsStripped()"))
+    }
+    
+    func testFunctionWithParametersIsStripped() {
+        consoleLogger.showInvocation = true
+        // Simulate a function with parameters by passing a custom function string
+        let functionName = "log(_:_:)"
+        consoleLogger.log(level: .info, message: "Parameter test", error: nil, args: nil, file: #file, fileId: #fileID, function: functionName, line: #line)
+        // Should contain only the base function name
+        XCTAssertTrue(consoleLogger.lastLoggedMessage.contains("/ConsoleLoggerTests.log:"))
+        // Should NOT contain the parameter signature
+        XCTAssertFalse(consoleLogger.lastLoggedMessage.contains("log(_:_:)"))
+    }
 }
