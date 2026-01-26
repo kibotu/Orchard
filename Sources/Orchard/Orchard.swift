@@ -33,7 +33,6 @@ import Foundation
 /// Remember: Logging is a powerful tool for debugging and monitoring, but it should be used
 /// judiciously to avoid cluttering your logs or impacting performance.
 public class Orchard {
-    
     /// Array of loggers that will receive log messages
     nonisolated(unsafe) public static var loggers = [Orchard.Logger]()
     
@@ -220,7 +219,7 @@ public class Orchard {
         }
         
         public static var callStack: [String] {
-            return Thread.callStack
+            Thread.callStack
         }
     }
     

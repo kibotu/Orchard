@@ -2,7 +2,6 @@ import Foundation
 
 /// A concrete implementation of Orchard.Logger that logs messages to the console
 public class ConsoleLogger: Orchard.Logger {
-    
     /// Configuration for logger behavior and formatting
     public var config: ConsoleLoggerConfig {
         didSet {
@@ -111,37 +110,37 @@ public class ConsoleLogger: Orchard.Logger {
     ///   - fileId: The file ID where the log was called
     ///   - function: The function where the log was called
     ///   - line: The line number where the log was called
-    public func verbose(_ message: String?, _ error: (any Error)?, _ args: [String : any CustomStringConvertible]?, _ file: String, _ fileId: String, _ function: String, _ line: Int) {
+    public func verbose(_ message: String?, _ error: (any Error)?, _ args: [String: any CustomStringConvertible]?, _ file: String, _ fileId: String, _ function: String, _ line: Int) {
         guard level <= Orchard.Level.verbose else { return }
         log(level: .verbose, message: message, error: error, args: args, file: file, fileId: fileId, function: function, line: line)
     }
     
     /// Logs a debug message to the console
-    public func debug(_ message: String?, _ error: (any Error)?, _ args: [String : any CustomStringConvertible]?, _ file: String, _ fileId: String, _ function: String, _ line: Int) {
+    public func debug(_ message: String?, _ error: (any Error)?, _ args: [String: any CustomStringConvertible]?, _ file: String, _ fileId: String, _ function: String, _ line: Int) {
         guard level <= Orchard.Level.debug else { return }
         log(level: .debug, message: message, error: error, args: args, file: file, fileId: fileId, function: function, line: line)
     }
     
     /// Logs an info message to the console
-    public func info(_ message: String?, _ error: (any Error)?, _ args: [String : any CustomStringConvertible]?, _ file: String, _ fileId: String, _ function: String, _ line: Int) {
+    public func info(_ message: String?, _ error: (any Error)?, _ args: [String: any CustomStringConvertible]?, _ file: String, _ fileId: String, _ function: String, _ line: Int) {
         guard level <= Orchard.Level.info else { return }
         log(level: .info, message: message, error: error, args: args, file: file, fileId: fileId, function: function, line: line)
     }
     
     /// Logs a warning message to the console
-    public func warning(_ message: String?, _ error: (any Error)?, _ args: [String : any CustomStringConvertible]?, _ file: String, _ fileId: String, _ function: String, _ line: Int) {
+    public func warning(_ message: String?, _ error: (any Error)?, _ args: [String: any CustomStringConvertible]?, _ file: String, _ fileId: String, _ function: String, _ line: Int) {
         guard level <= Orchard.Level.warning else { return }
         log(level: .warning, message: message, error: error, args: args, file: file, fileId: fileId, function: function, line: line)
     }
     
     /// Logs an error message to the console
-    public func error(_ message: String?, _ error: (any Error)?, _ args: [String : any CustomStringConvertible]?, _ file: String, _ fileId: String, _ function: String, _ line: Int) {
+    public func error(_ message: String?, _ error: (any Error)?, _ args: [String: any CustomStringConvertible]?, _ file: String, _ fileId: String, _ function: String, _ line: Int) {
         guard level <= Orchard.Level.error else { return }
         log(level: .error, message: message, error: error, args: args, file: file, fileId: fileId, function: function, line: line)
     }
     
     /// Logs a fatal message to the console
-    public func fatal(_ message: String?, _ error: (any Error)?, _ args: [String : any CustomStringConvertible]?, _ file: String, _ fileId: String, _ function: String, _ line: Int) {
+    public func fatal(_ message: String?, _ error: (any Error)?, _ args: [String: any CustomStringConvertible]?, _ file: String, _ fileId: String, _ function: String, _ line: Int) {
         guard level <= Orchard.Level.fatal else { return }
         log(level: .fatal, message: message, error: error, args: args, file: file, fileId: fileId, function: function, line: line)
     }
@@ -156,7 +155,7 @@ public class ConsoleLogger: Orchard.Logger {
     ///   - fileId: The file ID where the log was called
     ///   - function: The function where the log was called
     ///   - line: The line number where the log was called
-    open func log(level: Orchard.Level, message: String?, error: (any Error)?, args: [String : any CustomStringConvertible]?, file: String, fileId: String, function: String, line: Int) {
+    open func log(level: Orchard.Level, message: String?, error: (any Error)?, args: [String: any CustomStringConvertible]?, file: String, fileId: String, function: String, line: Int) {
         let functionName = function.components(separatedBy: "(").first ?? function
         let invocation = config.showInvocation ? "/\(fileId.fileFromfileId).\(functionName):\(line)" : ""
         

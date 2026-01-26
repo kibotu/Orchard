@@ -2,7 +2,6 @@ import Foundation
 
 /// Configuration for ConsoleLogger behavior and formatting
 public struct ConsoleLoggerConfig: Sendable {
-    
     /// Determines whether to show timestamps in log messages
     public var showTimestamp: Bool
     
@@ -42,4 +41,3 @@ public struct ConsoleLoggerConfig: Sendable {
         self.moduleNameMapper = moduleNameMapper
     }
 }
-

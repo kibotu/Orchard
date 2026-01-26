@@ -1,5 +1,4 @@
 public extension Orchard.Logger {
-    
     /// Logs a verbose message with optional error and additional context
     /// - Parameters:
     ///   - message: The main log message (optional)

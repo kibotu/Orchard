@@ -1,10 +1,9 @@
 import Foundation
 
 extension String {
-    
     /// meant for use for #file
     var moduleNameFromFile: String {
-        return NSString(string: self).pathComponents.first!
+        NSString(string: self).pathComponents.first!
     }
     
     var fileFromfileId: String {
