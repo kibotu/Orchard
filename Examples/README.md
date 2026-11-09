@@ -1,6 +1,6 @@
 # Orchard Demo 
 
-[![iOS CI](https://github.com/kibotu/Orchard/actions/workflows/ios.yml/badge.svg)](https://github.com/kibotu/Orchard/actions/workflows/ios.yml)
+
 
 Interactive iOS app demonstrating the Orchard logging framework.
 

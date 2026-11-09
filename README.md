@@ -1,88 +1,83 @@
-# Orchard for iOS
-[![Build](https://github.com/kibotu/Orchard/actions/workflows/build-swift.yml/badge.svg)](https://github.com/kibotu/Orchard/actions/workflows/build-swift.yml) [![iOS CI](https://github.com/kibotu/Orchard/actions/workflows/ios.yml/badge.svg)](https://github.com/kibotu/Orchard/actions/workflows/ios.yml) [![GitHub Tag](https://img.shields.io/github/v/tag/kibotu/Orchard?include_prereleases&sort=semver)](https://github.com/kibotu/Orchard/releases) ![Static Badge](https://img.shields.io/badge/Platform%20-%20iOS%20-%20light_green)
-[![Static Badge](https://img.shields.io/badge/iOS%20-%20%3E%2015.0%20-%20light_green)](https://support.apple.com/en-us/101566)
-[![Static Badge](https://img.shields.io/badge/Swift%206.0%20-%20orange)](https://www.swift.org/blog/announcing-swift-6/)
+# Orchard
 
-Welcome to **Orchard** - your new best friend for logging on iOS! 🍏📱
+[![Swift](https://github.com/kibotu/Orchard/actions/workflows/build-swift.yml/badge.svg)](https://github.com/kibotu/Orchard/actions/workflows/build-swift.yml)
+[![Release](https://img.shields.io/github/v/tag/kibotu/Orchard?include_prereleases&sort=semver)](https://github.com/kibotu/Orchard/releases)
+![Swift 6](https://img.shields.io/badge/Swift-6-orange)
+![Platforms](https://img.shields.io/badge/iOS%2015%20%7C%20macOS%2012%20%7C%20tvOS%2015%20%7C%20watchOS%208%20%7C%20visionOS%201-lightgrey)
 
-Inspired by the clever wordplay behind Timber, the Android logging system (logs and timber, get it?), we decided to bring a slice of that punny brilliance to iOS with Orchard. After all, what's more fitting than logging apples in the world of iPhones?
+Small, tag-and-icon-friendly logging for Swift. Log once; send it to as many places as you like.
 
-But let's get serious for a moment. Just because you're developing on iOS doesn't mean your logging has to be... shall we say, subpar? With Orchard, you can elevate your logging game with style and efficiency.
+```swift
+Orchard.loggers.append(ConsoleLogger())
 
-Orchard is a versatile logging system for Swift applications, designed to provide flexible and contextual logging capabilities.
-
-## Table of Contents
-
-- [Key Features](#key-features)
-- [📱 Demo App](#-demo-app)
-- [Quick Start](#quick-start)
-  - [Installation](#installation)
-  - [Setup](#setup)
-- [Usage Guide](#usage-guide)
-  - [1. Automatic Invocation Tracking](#1-automatic-invocation-tracking)
-  - [2. Maximum Flexibility](#2-maximum-flexibility)
-  - [3. Multiple Loggers](#3-multiple-loggers)
-  - [4. Console Logger Configuration](#4-console-logger-configuration)
-  - [5. Contextual Logging with Tags & Icons](#5-contextual-logging-with-tags--icons)
-  - [6. Rich Error Logging](#6-rich-error-logging)
-  - [7. Structured Logging with Arguments](#7-structured-logging-with-arguments)
-  - [8. Six Log Levels with Icons](#8-six-log-levels-with-icons)
-  - [9. Tags for Organization](#9-tags-for-organization)
-  - [10. Custom Icons](#10-custom-icons)
-- [Advanced Configuration](#advanced-configuration)
-  - [Custom Logger Implementation](#custom-logger-implementation)
-- [How to install](#how-to-install)
-  - [Swift Package Manager](#swift-package-manager)
-- [Requirements](#requirements)
-- [License](#license)
-
-## Key Features
-
-- 🎯 **Six Log Levels**: verbose, debug, info, warning, error, and fatal
-- 🔌 **Multiple Logging Backends**: Support for custom loggers (Console, File, Remote, etc.)
-- 🏷️ **Tags**: Categorize logs by module, feature, or context
-- 🎨 **Custom Icons**: Visual indicators for different log types
-- 📍 **Automatic Invocation Tracking**: Captures file, function, and line information
-- ⏰ **Timestamp Support**: Optional millisecond-precision timestamps
-- 🔄 **Flexible Parameters**: Any combination of message, error, and arguments
-- 🧵 **Thread-Safe**: Safe for concurrent logging operations
-
-## 📱 Demo App
-
-Want to see Orchard in action? Check out the **iOS Demo App**:
-
-[![Screenshot](docs/screenshot.png)](docs/screenshot.png)
-
-```bash
-cd Examples/OrchardDemo
-open OrchardDemo.xcodeproj
+Orchard.tag("Payment").icon("💳").i("Charged", ["amount": "99.99"])
+// 💳 13:54:48.403: [Payment/Checkout.pay():42] Charged {"amount":"99.99"}
 ```
 
-Press **⌘+R** in Xcode to run the interactive demo with live log display!
+## The problem
 
-[See Examples →](Examples/)
+`print` is fine for five minutes. Then you want levels, you want to know *where* a line came from, you want errors and context attached, and you want some of it in a crash reporter too. Every app ends up with a hand-rolled wrapper.
 
-## Quick Start
+Apple's `os.Logger` is excellent for the unified logging system, but it is one destination. If you also want a file, Crashlytics, or your analytics pipeline, you call each of them separately at every call site.
 
-### Installation
+Orchard is the thin layer in between: **one call, any number of destinations**.
 
-Add the Orchard package to your Swift project via Swift Package Manager.
+**Orchard is a good fit when you want:**
+- the same readable line, with file, function, and line, in every log
+- message, error, and key-value context in a single call
+- tags and icons chosen per call, not per logger
+- to add or swap destinations without touching call sites
 
-### Setup
+**Stick with `os.Logger` alone when** you only need Apple's unified logging, with its privacy redaction, compile-time optimizations, and Console.app and Instruments integration. Orchard doesn't replace those; see the [full comparison](comparision-to-other-loggers.md).
+
+You can have both: write a tiny `Orchard.Logger` that forwards to `os.Logger`.
+
+## Key features
+
+- 🎯 **Six log levels**: verbose, debug, info, warning, error, and fatal
+- 🔌 **Multiple logging backends**: console, file, remote, crash reporter; anything you can write as a `Logger`
+- 🏷️ **Tags**: categorize logs by module, feature, or context
+- 🎨 **Custom icons**: visual indicators for different kinds of logs
+- 📍 **Automatic call-site tracking**: file, function, and line, no boilerplate
+- ⏰ **Timestamps**: optional, with a configurable format
+- 🔄 **Flexible parameters**: any combination of message, error, and arguments
+- 🧱 **Structured arguments**: key-value context rendered as JSON; values that JSON can't represent fall back to their description instead of crashing
+- 🧵 **Thread-safe tag and icon state**
+- 📦 **Foundation only**: no dependencies
+
+## Get started
+
+**1. Add the package**
+
+```swift
+.package(url: "https://github.com/kibotu/Orchard", from: "<latest-version>")
+```
+
+Or in Xcode: **File → Add Package Dependencies…** → `https://github.com/kibotu/Orchard`.
+
+**2. Register a logger once, at launch**
 
 ```swift
 import Orchard
 
-// Configure console logger with optional features
-let consoleLogger = ConsoleLogger()
-consoleLogger.showTimesStamp = true    // Show timestamps
-consoleLogger.showInvocation = true    // Show file, function, line
-Orchard.loggers.append(consoleLogger)
+Orchard.loggers.append(ConsoleLogger())
 ```
 
-## Usage Guide
+**3. Log**
 
-### 1. Automatic Invocation Tracking
+```swift
+Orchard.i("App started")
+Orchard.e("Failed to load", error)
+Orchard.i("Tapped", ["button": "submit"])
+```
+
+That's it. Foundation only, no other dependencies. Requires iOS 15, macOS 12, tvOS 15, watchOS 8 or visionOS 1, and a Swift 6 toolchain.
+
+[![Demo app](docs/screenshot.png)](Examples/)
+
+## Usage guide
+
+### 1. Automatic call-site tracking
 
 Never wonder where a log came from again. Orchard automatically captures file, function, and line:
 
@@ -99,7 +94,7 @@ logger.showInvocation = true   // Shows full path: /Module/function():line
 logger.showInvocation = false  // Shows only module name
 ```
 
-### 2. Maximum Flexibility
+### 2. Maximum flexibility
 
 Mix and match any combination of message, error, and arguments:
 
@@ -126,7 +121,7 @@ Orchard.e("Request failed", error, ["url": "api.example.com", "method": "POST"])
 Orchard.tag("API").icon("🔥").e("Critical failure", error, ["endpoint": "/users", "status": "500", "retry": "3"])
 ```
 
-### 3. Multiple Loggers
+### 3. Multiple loggers
 
 Log to multiple destinations simultaneously:
 
@@ -143,7 +138,7 @@ Orchard.i("User logged in")
 // → Sent to analytics server
 ```
 
-### 4. Console Logger Configuration
+### 4. Console logger configuration
 
 Customize what information appears in your logs:
 
@@ -212,7 +207,7 @@ Orchard.loggers.append(consoleLogger)
 - `timestampFormat`: DateFormatter format string (default: `"HH:mm:ss.SSS"`)
 - `showInvocation`: Show file/function/line details (default: `true`)
 - `moduleNameMapper`: Transform module names with a custom closure (default: `nil`)
-  - The closure receives the extracted module name from `fileId.moduleNameFromFile`
+  - The closure receives the module name taken from `#fileID`
   - Return the transformed module name to display in logs
 
 **Example with custom module name mapper:**
@@ -229,7 +224,7 @@ Orchard.i("User logged in")
 // Output: ℹ️ 13:54:48.403: [UserViewModel/login:42] User logged in
 ```
 
-### 5. Contextual Logging with Tags & Icons
+### 5. Tags and icons
 
 The killer feature: combine tags and custom icons for instantly recognizable, categorized logs:
 
@@ -247,7 +242,7 @@ Orchard.tag("Network").icon("🌐").i("Connected to server")
 // Output: 🌐 13:54:48.403: [Network/ContentView.runAllExamples():181] Connected to server
 ```
 
-### 6. Rich Error Logging
+### 6. Rich error logging
 
 Log errors with full context - message, error object, and metadata in one call:
 
@@ -279,7 +274,7 @@ Orchard.tag("API").icon("🔥").e("Request failed", NetworkError.timeout, ["endp
 // Output: 🔥 13:54:48.413: [API/ContentView.runAllExamples():203] Request failed NetworkError: Request timed out {"endpoint":"/users","retry":"3"}
 ```
 
-### 7. Structured Logging with Arguments
+### 7. Structured arguments
 
 Attach key-value pairs for rich, queryable logs - perfect for analytics and debugging:
 
@@ -296,7 +291,7 @@ Orchard.tag("Performance").d("API response", ["duration": "245ms", "endpoint": "
 Orchard.tag("Database").e("Query failed", error, ["query": "SELECT * FROM users", "retry": "false"])
 ```
 
-### 8. Six Log Levels with Icons
+### 8. Six log levels
 
 Professional logging with built-in visual hierarchy:
 
@@ -320,7 +315,7 @@ Orchard.f("Fatal: Critical error!")
 // Output: ⚡️ 13:54:48.403: [OrchardDemo/ContentView.runAllExamples():171] Fatal: Critical error!
 ```
 
-### 9. Tags for Organization
+### 9. Tags for organization
 
 Categorize logs by module, feature, or any context you need:
 
@@ -338,7 +333,7 @@ Orchard.tag("Auth").w("Token will expire in 5 minutes")
 // Output: ⚠️ 13:54:48.403: [Auth/ContentView.runAllExamples():176] Token will expire in 5 minutes
 ```
 
-### 10. Custom Icons
+### 10. Custom icons
 
 Override default level icons for visual categorization:
 
@@ -353,63 +348,45 @@ Orchard.icon("🔐").w("Certificate will expire soon")
 // Output: 🔐 13:54:48.403: [OrchardDemo/ContentView.runAllExamples():181] Certificate will expire soon
 ```
 
-## Advanced Configuration
+### 11. Writing your own logger
 
-### Custom Logger Implementation
-
-Create your own logger by implementing the `Orchard.Logger` protocol:
+Conform to `Orchard.Logger`. `level` is the minimum severity the logger cares about:
 
 ```swift
-class FileLogger: Orchard.Logger {
-    let level: Orchard.Level = .info
+final class CrashReportLogger: Orchard.Logger {
+    let level: Orchard.Level = .error
     var tag: String?
     var icon: Character?
-    
-    func info(_ message: String?, _ error: Error?, _ args: [String: CustomStringConvertible]?, 
-              _ file: String, _ fileId: String, _ function: String, _ line: Int) {
-        // Write to file...
-        let logEntry = "\(Date()): [\(tag ?? "App")] \(message ?? "")"
-        // Append to file
+
+    func verbose(_ message: String?, _ error: Error?, _ args: [String: CustomStringConvertible]?, _ file: String, _ fileId: String, _ function: String, _ line: Int) {}
+    func debug(_ message: String?, _ error: Error?, _ args: [String: CustomStringConvertible]?, _ file: String, _ fileId: String, _ function: String, _ line: Int) {}
+    func info(_ message: String?, _ error: Error?, _ args: [String: CustomStringConvertible]?, _ file: String, _ fileId: String, _ function: String, _ line: Int) {}
+    func warning(_ message: String?, _ error: Error?, _ args: [String: CustomStringConvertible]?, _ file: String, _ fileId: String, _ function: String, _ line: Int) {}
+
+    func error(_ message: String?, _ error: Error?, _ args: [String: CustomStringConvertible]?, _ file: String, _ fileId: String, _ function: String, _ line: Int) {
+        // forward to your crash reporter
     }
-    
-    // Implement other level methods (verbose, debug, warning, error, fatal)...
+
+    func fatal(_ message: String?, _ error: Error?, _ args: [String: CustomStringConvertible]?, _ file: String, _ fileId: String, _ function: String, _ line: Int) {
+        self.error(message, error, args, file, fileId, function, line)
+    }
 }
-
-Orchard.loggers.append(FileLogger())
 ```
 
-## How to install
+For tests, `Orchard.loggers` is a plain array: swap in a recording logger and assert on what it received.
 
-### Swift Package Manager
+## Good to know
 
-| Latest Version | [![GitHub Tag](https://img.shields.io/github/v/tag/kibotu/Orchard?include_prereleases&sort=semver)](https://github.com/kibotu/Orchard/releases) |
-|----------------|---------|
+- Add loggers at startup. `Orchard.loggers` is a plain array and is not synchronized, so avoid mutating it while other threads are logging.
+- A tag or icon is shared state until the next log call consumes it. Chain it directly onto the call, as in the examples above.
+- Logs are not redacted. Keep secrets and personal data out of messages and arguments.
 
-Add the dependency to your `Package.swift`:
+## More
 
-```swift
-dependencies: [
-    .package(url: "https://github.com/kibotu/Orchard", from: "<latest-version>"),
-],
-targets: [
-    .target(
-        name: "YourTarget",
-        dependencies: ["Orchard"]
-    )
-]
-```
+- [Demo app](Examples/): open `Examples/OrchardDemo` and press **⌘R**.
+- [How Orchard compares to other loggers](comparision-to-other-loggers.md).
 
-Or add it directly in Xcode:
-1. **File → Add Package Dependencies**
-2. Enter: `https://github.com/kibotu/Orchard`
-3. Select the latest version shown above
-
-## Requirements
-
-- iOS 15.0 or later
-- Xcode 16.0 or later
-
-Contributions welcome!
+Contributions are welcome. Please run `swift test` and `swiftlint` before opening a pull request.
 
 ### License
 <pre>

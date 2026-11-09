@@ -2,23 +2,66 @@ name: Swift
 
 on:
   push:
-    branches: [master, '[0-9]+.[0-9]+.[0-9]+']
-    tags: ['[0-9]+.[0-9]+.[0-9]+*']
-  pull_request:
     branches: [master]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   build:
-    runs-on: macos-latest
+    name: macOS 27 / Xcode latest on ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [xcode-27]
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Show versions
+      - uses: actions/checkout@v7
+
+      - name: Select latest Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: 'latest'
+
+      - name: Log toolchain versions
         run: |
+          echo "== macOS =="
+          sw_vers
+          echo "== Xcode =="
           xcodebuild -version
+          xcode-select -p
+          echo "== Swift =="
           swift --version
-      
-      - name: Build and test
+          echo "== iOS simulator runtimes =="
+          xcrun simctl list runtimes | grep -E '^iOS'
+
+      - name: Lint
         run: |
-          swift build -v
-          swift test -v
+          command -v swiftlint >/dev/null || brew install swiftlint
+          swiftlint lint
+
+      - name: Build (macOS)
+        run: swift build
+
+      - name: Test (macOS)
+        run: swift test
+
+      - name: Test on iPhone 18 Pro (iOS latest)
+        run: |
+          xcodebuild \
+            -scheme Orchard \
+            -destination 'platform=iOS Simulator,name=iPhone 18 Pro,OS=latest' \
+            test
+
+      - name: Build demo app
+        run: |
+          xcodebuild \
+            -project Examples/OrchardDemo/OrchardDemo.xcodeproj \
+            -scheme OrchardDemo \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            build

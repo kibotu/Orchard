@@ -90,3 +90,37 @@ class OrchardTests: XCTestCase {
 }
 
 
+
+final class RobustnessTests: XCTestCase {
+    private struct Opaque: CustomStringConvertible {
+        var description: String { "opaque" }
+    }
+
+    func testArgsWithNonJSONValuesDoNotCrash() {
+        XCTAssertEqual(paddedToString(["a": Opaque(), "b": 1]), " {\"a\":\"opaque\",\"b\":1}")
+    }
+
+    func testNonFiniteNumbersFallBackToDescription() {
+        XCTAssertEqual(paddedToString(["x": Double.nan]), " {\"x\":\"nan\"}")
+    }
+
+    func testEmptyFileIdDoesNotCrash() {
+        XCTAssertEqual("".moduleNameFromFile, "")
+    }
+
+    func testTagAndIconAreConsumedByASingleCall() {
+        let mock = MockLogger()
+        Orchard.loggers = [mock]
+        defer { Orchard.loggers = [] }
+
+        Orchard.tag("A").icon("🍎").i("first")
+        Orchard.i("second")
+
+        XCTAssertNil(mock.lastTag)
+        XCTAssertNil(mock.lastIcon)
+    }
+
+    func testCallStackToleratesShortFrames() {
+        XCTAssertFalse(Thread.callStack.isEmpty)
+    }
+}

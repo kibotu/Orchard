@@ -4,13 +4,6 @@ public extension Orchard {
     // MARK: - Convenience methods for logging errors without messages
     
     /// Logs a verbose message with an error and optional arguments
-    /// - Parameters:
-    ///   - error: The error to log
-    ///   - args: Additional context as key-value pairs
-    ///   - file: The file where the log was called (default: #file)
-    ///   - fileId: The file ID where the log was called (default: #fileID)
-    ///   - function: The function where the log was called (default: #function)
-    ///   - line: The line number where the log was called (default: #line)
     static func v(_ error: Error? = nil, _ args: [String: CustomStringConvertible]? = nil, _ file: String = #file, _ fileId: String = #fileID, _ function: String = #function, _ line: Int = #line) {
         v(nil, error, args, file, fileId, function, line)
     }
@@ -43,13 +36,6 @@ public extension Orchard {
     // MARK: - Convenience methods for logging messages with arguments without errors
     
     /// Logs a verbose message with optional arguments
-    /// - Parameters:
-    ///   - message: The message to log
-    ///   - args: Additional context as key-value pairs
-    ///   - file: The file where the log was called (default: #file)
-    ///   - fileId: The file ID where the log was called (default: #fileID)
-    ///   - function: The function where the log was called (default: #function)
-    ///   - line: The line number where the log was called (default: #line)
     static func v(_ message: String? = nil, _ args: [String: CustomStringConvertible]? = nil, _ file: String = #file, _ fileId: String = #fileID, _ function: String = #function, _ line: Int = #line) {
         v(message, nil, args, file, fileId, function, line)
     }
@@ -80,10 +66,7 @@ public extension Orchard {
     }
 }
 
-/// Extension to provide a padded string representation of an optional Error
 extension Optional where Wrapped == Error {
-    /// Returns a padded string representation of the error
-    /// - Returns: A string with a leading space and the error description if present, or an empty string if nil
     var paddedNilOrValue: String {
         switch self {
         case .some(let value):
@@ -95,32 +78,25 @@ extension Optional where Wrapped == Error {
     }
 }
 
-/// Converts a dictionary of CustomStringConvertible values to a JSON string
-/// - Parameters:
-///   - args: The dictionary to convert
-///   - opt: JSON writing options (default: [.sortedKeys])
-/// - Returns: A padded JSON string representation of the dictionary, or an empty string if conversion fails
 func paddedToString(_ args: [String: any CustomStringConvertible]?, _ opt: JSONSerialization.WritingOptions = [.sortedKeys]) -> String {
     guard let args = args else {
         return ""
     }
     
-    do {
-        let jsonData = try JSONSerialization.data(withJSONObject: args, options: opt)
-        if let jsonString = String(data: jsonData, encoding: .utf8) {
-            return " \(jsonString)"
-        }
-    } catch {
-        // ignore
+    // JSONSerialization raises an Objective-C exception (uncatchable from Swift) for values it cannot
+    // encode, so anything that is not valid JSON falls back to its description.
+    let jsonObject = args.mapValues { value -> Any in
+        JSONSerialization.isValidJSONObject([value]) ? value : value.description
     }
-    
-    return ""
+
+    guard let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject, options: opt),
+          let jsonString = String(data: jsonData, encoding: .utf8) else {
+        return ""
+    }
+    return " \(jsonString)"
 }
 
-/// Extension to provide a padded string representation of an optional String
 extension Optional where Wrapped == String {
-    /// Returns a padded string representation of the optional String
-    /// - Returns: A string with a leading space and the value if present, or an empty string if nil
     var paddedNilOrValue: String {
         switch self {
         case .some(let value):

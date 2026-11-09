@@ -1,42 +1,19 @@
 import Foundation
 
-/// Orchard: A versatile and unified logging system for Swift applications
+/// Unified logging facade: register loggers once, then log from anywhere.
 ///
-/// The `Orchard` class provides a centralized logging mechanism that allows for easy integration
-/// of multiple logging backends while offering a clean and consistent API for logging across
-/// your entire application.
-///
-/// # Key Features:
-/// - Support for multiple logging levels (verbose, debug, info, warning, error, fatal)
-/// - Ability to add custom loggers
-/// - Chainable methods for setting tags and icons
-/// - Automatic capture of file, function, and line information
-///
-/// # Usage:
-/// ```
-/// // Add your custom loggers
-/// Orchard.loggers.append(MyCustomLogger())
-///
-/// // Basic logging
-/// Orchard.i("User logged in successfully")
-///
-/// // Logging with additional context
-/// Orchard.tag("NetworkManager").icon("🌐").e("Failed to fetch data", error)
+/// ```swift
+/// Orchard.loggers.append(ConsoleLogger())
+/// Orchard.i("User logged in")
+/// Orchard.tag("Network").icon("🌐").e("Failed to fetch data", error)
 /// ```
 ///
-/// # Best Practices:
-/// 1. Use appropriate log levels for different scenarios
-/// 2. Utilize tags to categorize logs (e.g., by module or feature)
-/// 3. Include relevant context in your log messages
-/// 4. Be mindful of performance impact in production environments
-///
-/// Remember: Logging is a powerful tool for debugging and monitoring, but it should be used
-/// judiciously to avoid cluttering your logs or impacting performance.
+/// A tag or icon applies to the next log call only. Add loggers at startup;
+/// `loggers` is not synchronized.
 public class Orchard {
     /// Array of loggers that will receive log messages
     nonisolated(unsafe) public static var loggers = [Orchard.Logger]()
     
-    /// Current tag to be applied to the next log message
     nonisolated(unsafe) static private var _tag: String?
     static private let lock = NSLock()
 
@@ -53,7 +30,6 @@ public class Orchard {
         }
     }
     
-    /// Current icon to be applied to the next log message
     nonisolated(unsafe) private static var _icon: Character?
     private static let iconLock = NSLock()
 
@@ -137,6 +113,9 @@ public class Orchard {
     // MARK: - Private Helper Method
     
     private static func log(level: Level, message: String?, error: Error?, args: [String: CustomStringConvertible]?, file: String, fileId: String, function: String, line: Int) {
+        // Consume the pending tag and icon up front so that each chain applies to exactly one call.
+        let tag = consume(&_tag, lock: lock)
+        let icon = consume(&_icon, lock: iconLock)
         for var logger in loggers {
             logger.tag = tag
             logger.icon = icon
@@ -149,8 +128,13 @@ public class Orchard {
             case .fatal: logger.fatal(message, error, args, file, fileId, function, line)
             }
         }
-        tag = nil
-        icon = nil
+    }
+
+    private static func consume<T>(_ value: inout T?, lock: NSLock) -> T? {
+        lock.lock()
+        defer { lock.unlock() }
+        defer { value = nil }
+        return value
     }
     
     /// Represents different severity levels for log messages
@@ -192,7 +176,6 @@ public class Orchard {
             }
         }
         
-        /// Internal representation of severity order for comparison
         private var severityOrder: Int {
             switch self {
             case .verbose: return 0
