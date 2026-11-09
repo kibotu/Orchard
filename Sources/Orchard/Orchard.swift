@@ -137,6 +137,9 @@ public class Orchard {
     // MARK: - Private Helper Method
     
     private static func log(level: Level, message: String?, error: Error?, args: [String: CustomStringConvertible]?, file: String, fileId: String, function: String, line: Int) {
+        // Consume the pending tag and icon up front so that each chain applies to exactly one call.
+        let tag = consume(&_tag, lock: lock)
+        let icon = consume(&_icon, lock: iconLock)
         for var logger in loggers {
             logger.tag = tag
             logger.icon = icon
@@ -149,8 +152,13 @@ public class Orchard {
             case .fatal: logger.fatal(message, error, args, file, fileId, function, line)
             }
         }
-        tag = nil
-        icon = nil
+    }
+
+    private static func consume<T>(_ value: inout T?, lock: NSLock) -> T? {
+        lock.lock()
+        defer { lock.unlock() }
+        defer { value = nil }
+        return value
     }
     
     /// Represents different severity levels for log messages

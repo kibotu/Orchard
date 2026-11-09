@@ -105,16 +105,17 @@ func paddedToString(_ args: [String: any CustomStringConvertible]?, _ opt: JSONS
         return ""
     }
     
-    do {
-        let jsonData = try JSONSerialization.data(withJSONObject: args, options: opt)
-        if let jsonString = String(data: jsonData, encoding: .utf8) {
-            return " \(jsonString)"
-        }
-    } catch {
-        // ignore
+    // JSONSerialization raises an Objective-C exception (uncatchable from Swift) for values it cannot
+    // encode, so anything that is not valid JSON falls back to its description.
+    let jsonObject = args.mapValues { value -> Any in
+        JSONSerialization.isValidJSONObject([value]) ? value : value.description
     }
-    
-    return ""
+
+    guard let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject, options: opt),
+          let jsonString = String(data: jsonData, encoding: .utf8) else {
+        return ""
+    }
+    return " \(jsonString)"
 }
 
 /// Extension to provide a padded string representation of an optional String
