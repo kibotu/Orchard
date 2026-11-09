@@ -14,37 +14,17 @@ Orchard.tag("Payment").icon("💳").i("Charged", ["amount": "99.99"])
 // 💳 13:54:48.403: [Payment/Checkout.pay():42] Charged {"amount":"99.99"}
 ```
 
-Orchard is inspired by [Timber](https://github.com/JakeWharton/timber): a tiny call site, pluggable backends, and no opinion about where your logs end up. It has no dependencies beyond Foundation.
+## Get started
 
-[![Demo app](docs/screenshot.png)](Examples/)
-
-## Why Orchard
-
-- **One call site.** `Orchard.i(...)` everywhere; swap or add backends without touching feature code.
-- **Backends are yours.** Implement `Orchard.Logger` for files, crash reporters, or analytics. The bundled `ConsoleLogger` is optional.
-- **Context where you need it.** Tags, icons, an optional error, and key-value arguments, in any combination.
-- **Call-site capture.** File, function, and line come for free.
-- **Concurrency-aware.** Built in Swift 6 language mode; tag and icon state is lock-protected.
-- **Light.** One module, Foundation only.
-
-## Installation
-
-Swift Package Manager:
+**1. Add the package**
 
 ```swift
-dependencies: [
-    .package(url: "https://github.com/kibotu/Orchard", from: "<latest-version>"),
-],
-targets: [
-    .target(name: "YourTarget", dependencies: ["Orchard"]),
-]
+.package(url: "https://github.com/kibotu/Orchard", from: "<latest-version>")
 ```
 
-Or in Xcode: **File → Add Package Dependencies…** and enter `https://github.com/kibotu/Orchard`.
+Or in Xcode: **File → Add Package Dependencies…** → `https://github.com/kibotu/Orchard`.
 
-## Usage
-
-Register loggers once, early in your app's lifecycle:
+**2. Register a logger once, at launch**
 
 ```swift
 import Orchard
@@ -52,13 +32,24 @@ import Orchard
 Orchard.loggers.append(ConsoleLogger())
 ```
 
-Then log. Message, error, and arguments are all optional and combine freely:
+**3. Log**
 
 ```swift
 Orchard.i("App started")
-Orchard.e(error)
 Orchard.e("Failed to load", error)
 Orchard.i("Tapped", ["button": "submit"])
+```
+
+That's it. Foundation only, no other dependencies. Requires iOS 15, macOS 12, tvOS 15, watchOS 8 or visionOS 1, and a Swift 6 toolchain.
+
+[![Demo app](docs/screenshot.png)](Examples/)
+
+## Usage
+
+Message, error, and arguments are all optional and combine freely:
+
+```swift
+Orchard.e(error)
 Orchard.e("Request failed", error, ["url": "api.example.com", "method": "POST"])
 ```
 
@@ -131,16 +122,10 @@ For tests, `Orchard.loggers` is a plain array: swap in a recording logger and as
 - A tag or icon is shared state until the next log call consumes it. Chain it directly onto the call, as in the examples above.
 - Logs are not redacted. Keep secrets and personal data out of messages and arguments.
 
-## Demo app
+## More
 
-An interactive SwiftUI app lives in [`Examples/OrchardDemo`](Examples/). Open the project and press **⌘R**.
-
-## Requirements
-
-- iOS 15, macOS 12, tvOS 15, watchOS 8, or visionOS 1
-- Swift 6 toolchain (Xcode 16 or later; CI runs on the latest Xcode)
-
-See also: [how Orchard compares to other loggers](comparision-to-other-loggers.md).
+- [Demo app](Examples/): open `Examples/OrchardDemo` and press **⌘R**.
+- [How Orchard compares to other loggers](comparision-to-other-loggers.md).
 
 Contributions are welcome. Please run `swift test` and `swiftlint` before opening a pull request.
 

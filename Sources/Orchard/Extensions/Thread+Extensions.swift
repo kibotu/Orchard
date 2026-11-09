@@ -37,7 +37,6 @@ public extension Thread {
                    let number = String(description[range])
                    return "Thread-\(number)"
                } else {
-                   // As a fallback, use the memory address of the Thread object.
                    return "Thread-<\(Unmanaged.passUnretained(Thread.current).toOpaque())>"
                }
            }
@@ -47,7 +46,6 @@ public extension Thread {
 public typealias SwiftDemangle = @convention(c) (_ mangledName: UnsafePointer<CChar>?, _ mangledNameLength: Int, _ outputBuffer: UnsafeMutablePointer<CChar>?, _ outputBufferSize: UnsafeMutablePointer<Int>?, _ flags: UInt32) -> UnsafeMutablePointer<CChar>?
 
 // swiftlint:disable identifier_name force_unwrapping
-// Part of the public API; kept as-is for source compatibility.
 nonisolated(unsafe) public let RTLD_DEFAULT = dlopen(nil, RTLD_NOW)
 nonisolated(unsafe) public let demangleSymbol = dlsym(RTLD_DEFAULT, "swift_demangle")!
 nonisolated(unsafe) public let cDemangle = unsafeBitCast(demangleSymbol, to: SwiftDemangle.self)
@@ -55,17 +53,13 @@ nonisolated(unsafe) public let cDemangle = unsafeBitCast(demangleSymbol, to: Swi
 
 public func demangle(_ mangled: String) -> String {
     mangled.withCString { cString in
-        // Prepare output buffer size
         var size: Int = 0
         let ptr = cDemangle(cString, strlen(cString), nil, &size, 0)
         
-        // Check if demangling was successful
         guard let result = ptr else { return mangled }
         
-        // Convert demangled name to string
         let demangledName = String(cString: result)
         
-        // Free memory allocated by swift_demangle (if necessary)
         free(result)
         
         return demangledName

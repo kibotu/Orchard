@@ -5,13 +5,11 @@ public class ConsoleLogger: Orchard.Logger {
     /// Configuration for logger behavior and formatting
     public var config: ConsoleLoggerConfig {
         didSet {
-            // Update formatter when config changes
             formatter.dateFormat = config.timestampFormat
         }
     }
     
     /// Public initializer for ConsoleLogger
-    /// - Parameter config: Optional configuration (defaults to ConsoleLoggerConfig.default)
     public init(config: ConsoleLoggerConfig = .default) {
         self.config = config
         self.formatter = DateFormatter()
@@ -41,7 +39,6 @@ public class ConsoleLogger: Orchard.Logger {
     /// The minimum log level this logger will process (set to verbose by default)
     public let level: Orchard.Level = Orchard.Level.verbose
         
-    /// Optional tag to categorize log messages
     nonisolated(unsafe) private var _tag: String?
     private let lock = NSLock()
 
@@ -58,7 +55,6 @@ public class ConsoleLogger: Orchard.Logger {
         }
     }
     
-    /// Optional icon to visually represent log messages
     nonisolated(unsafe) private var _icon: Character?
     private let iconLock = NSLock()
 
@@ -89,10 +85,8 @@ public class ConsoleLogger: Orchard.Logger {
         set { config.showInvocation = newValue }
     }
     
-    /// Date formatter for timestamp formatting
     private var formatter: DateFormatter
     
-    /// Computed property that returns a formatted timestamp string if showTimestamp is true, otherwise an empty string
     var date: String {
         if config.showTimestamp {
             "\(formatter.string(from: Date())): "
@@ -102,14 +96,6 @@ public class ConsoleLogger: Orchard.Logger {
     }
     
     /// Logs a verbose message to the console
-    /// - Parameters:
-    ///   - message: The main log message
-    ///   - error: An associated error, if any
-    ///   - args: Additional context as key-value pairs
-    ///   - file: The file where the log was called
-    ///   - fileId: The file ID where the log was called
-    ///   - function: The function where the log was called
-    ///   - line: The line number where the log was called
     public func verbose(_ message: String?, _ error: (any Error)?, _ args: [String: any CustomStringConvertible]?, _ file: String, _ fileId: String, _ function: String, _ line: Int) {
         guard level <= Orchard.Level.verbose else { return }
         log(level: .verbose, message: message, error: error, args: args, file: file, fileId: fileId, function: function, line: line)
@@ -146,20 +132,10 @@ public class ConsoleLogger: Orchard.Logger {
     }
     
     /// Private helper method to format and print log messages
-    /// - Parameters:
-    ///   - level: The log level
-    ///   - message: The main log message
-    ///   - error: An associated error, if any
-    ///   - args: Additional context as key-value pairs
-    ///   - file: The file where the log was called
-    ///   - fileId: The file ID where the log was called
-    ///   - function: The function where the log was called
-    ///   - line: The line number where the log was called
     open func log(level: Orchard.Level, message: String?, error: (any Error)?, args: [String: any CustomStringConvertible]?, file: String, fileId: String, function: String, line: Int) {
         let functionName = function.components(separatedBy: "(").first ?? function
         let invocation = config.showInvocation ? "/\(fileId.fileFromfileId).\(functionName):\(line)" : ""
         
-        // Apply module name mapper if provided, otherwise use default
         let moduleName: String
         if let mapper = config.moduleNameMapper {
             moduleName = mapper(fileId.moduleNameFromFile)
