@@ -40,7 +40,9 @@ jobs:
           xcrun simctl list runtimes | grep -E '^iOS'
 
       - name: Lint
-        run: swiftlint lint
+        run: |
+          command -v swiftlint >/dev/null || brew install swiftlint
+          swiftlint lint
 
       - name: Build (macOS)
         run: swift build
