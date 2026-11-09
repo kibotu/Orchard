@@ -109,7 +109,7 @@ final class CrashReportLogger: Orchard.Logger {
     }
 
     func fatal(_ message: String?, _ error: Error?, _ args: [String: CustomStringConvertible]?, _ file: String, _ fileId: String, _ function: String, _ line: Int) {
-        error(message, error, args, file, fileId, function, line)
+        self.error(message, error, args, file, fileId, function, line)
     }
 }
 ```
